@@ -2,10 +2,10 @@
 -- Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
--- Date        : Mon Mar 30 23:16:46 2026
+-- Date        : Tue Mar 31 01:15:02 2026
 -- Host        : DESKTOP-6QOLK3M running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
---               c:/Users/Tim/Documents/ECE_615/vivado_projects/final_proj_vivado/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/design_1_d_axi_i2s_audio_0_0_stub.vhdl
+--               c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/design_1_d_axi_i2s_audio_0_0_stub.vhdl
 -- Design      : design_1_d_axi_i2s_audio_0_0
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7z010clg400-1

@@ -1,4 +1,4 @@
-set_property SRC_FILE_INFO {cfile:C:/Users/Tim/Documents/ECE_615/vivado_projects/final_proj_vivado/zybo-z7-dma.xdc rfile:../../../zybo-z7-dma.xdc id:1} [current_design]
+set_property SRC_FILE_INFO {cfile:C:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/zybo-z7-dma.xdc rfile:../../../zybo-z7-dma.xdc id:1} [current_design]
 set_property src_info {type:XDC file:1 line:4 export:INPUT save:INPUT read:READ} [current_design]
 set_property -dict { PACKAGE_PIN R19   IOSTANDARD LVCMOS33 } [get_ports ac_bclk]; #IO_L12N_T1_MRCC_35 Sch=AC_BCLK
 set_property src_info {type:XDC file:1 line:5 export:INPUT save:INPUT read:READ} [current_design]

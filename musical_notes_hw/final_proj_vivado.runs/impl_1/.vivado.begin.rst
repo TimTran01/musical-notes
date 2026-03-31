@@ -23,3 +23,13 @@
     <Process Command="vivado.bat" Owner="Tim" Host="DESKTOP-6QOLK3M" Pid="95024" HostCore="24" HostMemory="033441460224">
     </Process>
 </ProcessHandle>
+<?xml version="1.0"?>
+<ProcessHandle Version="1" Minor="0">
+    <Process Command="vivado.bat" Owner="Tim" Host="DESKTOP-6QOLK3M" Pid="87236" HostCore="24" HostMemory="033441460224">
+    </Process>
+</ProcessHandle>
+<?xml version="1.0"?>
+<ProcessHandle Version="1" Minor="0">
+    <Process Command="vivado.bat" Owner="Tim" Host="DESKTOP-6QOLK3M" Pid="81276" HostCore="24" HostMemory="033441460224">
+    </Process>
+</ProcessHandle>

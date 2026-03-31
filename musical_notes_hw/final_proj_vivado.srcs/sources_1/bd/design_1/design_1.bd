@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xFDFD5C86D314A3ED",
+      "boundary_crc": "0xFDFD5C86266EDDCF",
       "device": "xc7z010clg400-1",
       "gen_directory": "../../../../final_proj_vivado.gen/sources_1/bd/design_1",
       "name": "design_1",
@@ -2341,13 +2341,13 @@
           "axi_interconnect_0/M01_ARESETN",
           "axi_iic_0/s_axi_aresetn",
           "axi_interconnect_0/M02_ARESETN",
-          "d_axi_i2s_audio_0/AXI_L_aresetn",
           "axi_interconnect_0/M03_ARESETN",
           "axi_interconnect_1/S00_ARESETN",
           "axi_interconnect_1/M00_ARESETN",
           "axi_interconnect_1/S01_ARESETN",
+          "d_axi_i2s_audio_0/S_AXIS_MM2S_ARESETN",
           "d_axi_i2s_audio_0/M_AXIS_S2MM_ARESETN",
-          "d_axi_i2s_audio_0/S_AXIS_MM2S_ARESETN"
+          "d_axi_i2s_audio_0/AXI_L_aresetn"
         ]
       },
       "processing_system7_0_FCLK_CLK0": {
@@ -2364,17 +2364,17 @@
           "axi_iic_0/s_axi_aclk",
           "axi_interconnect_0/M02_ACLK",
           "axi_interconnect_1/ACLK",
-          "d_axi_i2s_audio_0/AXI_L_aclk",
           "axi_interconnect_0/M03_ACLK",
           "axi_dma_0/m_axi_mm2s_aclk",
           "axi_interconnect_1/S00_ACLK",
           "axi_interconnect_1/M00_ACLK",
           "axi_dma_0/m_axi_s2mm_aclk",
           "axi_interconnect_1/S01_ACLK",
-          "d_axi_i2s_audio_0/M_AXIS_S2MM_ACLK",
-          "d_axi_i2s_audio_0/S_AXIS_MM2S_ACLK",
+          "processing_system7_0/S_AXI_HP0_ACLK",
           "d_axi_i2s_audio_0/CLK_100MHZ_I",
-          "processing_system7_0/S_AXI_HP0_ACLK"
+          "d_axi_i2s_audio_0/S_AXIS_MM2S_ACLK",
+          "d_axi_i2s_audio_0/M_AXIS_S2MM_ACLK",
+          "d_axi_i2s_audio_0/AXI_L_aclk"
         ]
       },
       "processing_system7_0_FCLK_RESET0_N": {
