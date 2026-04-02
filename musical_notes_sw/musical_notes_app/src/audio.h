@@ -67,15 +67,15 @@
 #include "xil_cache.h"
 #include "xstatus.h"
 #include "sleep.h"
-#include "../dma/dma.h"
-#include "../demo.h"
+#include "dma.h"
+#include "demo.h"
 
 /************************** Constant Definitions *****************************/
 #define DDR_OFFSET				0x07F00000
 
 // Base Addresses
 #define SW_ADDR					XPAR_SWITCHES_0_BASEADDR
-#define AUDIO_CTL_ADDR			XPAR_D_AXI_I2S_AUDIO_0_AXI_L_BASEADDR
+#define AUDIO_CTL_ADDR			XPAR_D_AXI_I2S_AUDIO_0_BASEADDR
 
 
 //SLave address of the ADAU audio controller
