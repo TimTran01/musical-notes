@@ -4,8 +4,8 @@
 -- Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
 -- Date        : Mon Mar 30 23:16:37 2026
 -- Host        : DESKTOP-6QOLK3M running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub
---               c:/Users/Tim/Documents/ECE_615/vivado_projects/final_proj_vivado/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_xbar_0/design_1_xbar_0_stub.vhdl
+-- Command     : write_vhdl -force -mode synth_stub -rename_top design_1_xbar_0 -prefix
+--               design_1_xbar_0_ design_1_xbar_0_stub.vhdl
 -- Design      : design_1_xbar_0
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7z010clg400-1

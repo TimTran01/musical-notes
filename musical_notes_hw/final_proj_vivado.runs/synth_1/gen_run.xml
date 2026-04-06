@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1774934057" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/design_1_wrapper.dcp">
+<GenRun Id="synth_1" LaunchPart="xc7z010clg400-1" LaunchTime="1775492332" LaunchIncrCheckpoint="$PSRCDIR/utils_1/imports/synth_1/design_1_wrapper.dcp">
   <File Type="PA-TCL" Name="design_1_wrapper.tcl"/>
   <File Type="RDS-PROPCONSTRS" Name="design_1_wrapper_drc_synth.rpt"/>
   <File Type="REPORTS-TCL" Name="design_1_wrapper_reports.tcl"/>
@@ -62,12 +62,7 @@
     </StratHandle>
     <Step Id="synth_design"/>
   </Strategy>
-  <BlockFileSet Type="BlockSrcs" Name="design_1_proc_sys_reset_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="design_1_axi_gpio_0_0"/>
-  <BlockFileSet Type="BlockSrcs" Name="design_1_processing_system7_0_0"/>
-  <BlockFileSet Type="BlockSrcs" Name="design_1_axi_iic_0_0"/>
-  <BlockFileSet Type="BlockSrcs" Name="design_1_axi_dma_0_0"/>
-  <BlockFileSet Type="BlockSrcs" Name="design_1_xbar_0"/>
   <BlockFileSet Type="BlockSrcs" Name="design_1_d_axi_i2s_audio_0_0"/>
-  <BlockFileSet Type="BlockSrcs" Name="design_1_xbar_1"/>
+  <BlockFileSet Type="BlockSrcs" Name="design_1_processing_system7_1_1"/>
 </GenRun>

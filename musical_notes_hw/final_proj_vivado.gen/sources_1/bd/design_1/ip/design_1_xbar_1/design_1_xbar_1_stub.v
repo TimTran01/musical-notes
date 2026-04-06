@@ -2,10 +2,10 @@
 // Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-// Date        : Tue Mar 31 00:21:51 2026
+// Date        : Mon Mar 30 23:16:37 2026
 // Host        : DESKTOP-6QOLK3M running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode synth_stub
-//               c:/Users/Tim/Documents/ECE_615/vivado_projects/final_proj_vivado/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_xbar_1/design_1_xbar_1_stub.v
+// Command     : write_verilog -force -mode synth_stub -rename_top design_1_xbar_1 -prefix
+//               design_1_xbar_1_ design_1_xbar_1_stub.v
 // Design      : design_1_xbar_1
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7z010clg400-1

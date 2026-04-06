@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
-| Date             : Tue Mar 31 01:16:52 2026
+| Date             : Mon Apr  6 12:21:03 2026
 | Host             : DESKTOP-6QOLK3M running 64-bit major release  (build 9200)
 | Command          : report_power -file design_1_wrapper_power_routed.rpt -pb design_1_wrapper_power_summary_routed.pb -rpx design_1_wrapper_power_routed.rpx
 | Design           : design_1_wrapper
@@ -30,14 +30,14 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 1.789        |
+| Total On-Chip Power (W)  | 1.665        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 1.668        |
-| Device Static (W)        | 0.121        |
+| Dynamic (W)              | 1.542        |
+| Device Static (W)        | 0.124        |
 | Effective TJA (C/W)      | 11.5         |
-| Max Ambient (C)          | 64.4         |
-| Junction Temperature (C) | 45.6         |
+| Max Ambient (C)          | 65.8         |
+| Junction Temperature (C) | 44.2         |
 | Confidence Level         | Low          |
 | Setting File             | ---          |
 | Simulation Activity File | ---          |
@@ -54,20 +54,20 @@ Table of Contents
 +--------------------------+-----------+----------+-----------+-----------------+
 | Clocks                   |     0.016 |        5 |       --- |             --- |
 | Slice Logic              |     0.003 |    10523 |       --- |             --- |
-|   LUT as Logic           |     0.002 |     3500 |     17600 |           19.89 |
+|   LUT as Logic           |     0.002 |     3502 |     17600 |           19.90 |
 |   CARRY4                 |    <0.001 |      137 |      4400 |            3.11 |
 |   Register               |    <0.001 |     5049 |     35200 |           14.34 |
 |   LUT as Shift Register  |    <0.001 |      198 |      6000 |            3.30 |
 |   F7/F8 Muxes            |    <0.001 |       12 |     17600 |            0.07 |
 |   Others                 |     0.000 |      595 |       --- |             --- |
 |   LUT as Distributed RAM |     0.000 |       18 |      6000 |            0.30 |
-| Signals                  |     0.004 |     7630 |       --- |             --- |
+| Signals                  |     0.004 |     7615 |       --- |             --- |
 | Block RAM                |     0.004 |      8.5 |        60 |           14.17 |
 | PLL                      |     0.109 |        1 |         2 |           50.00 |
 | I/O                      |     0.001 |       13 |       100 |           13.00 |
-| PS7                      |     1.530 |        1 |       --- |             --- |
-| Static Power             |     0.121 |          |           |                 |
-| Total                    |     1.789 |          |           |                 |
+| PS7                      |     1.404 |        1 |       --- |             --- |
+| Static Power             |     0.124 |          |           |                 |
+| Total                    |     1.665 |          |           |                 |
 +--------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -77,7 +77,7 @@ Table of Contents
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source    | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint    |       1.000 |     0.045 |       0.037 |      0.008 |       NA    | Unspecified | NA         |
+| Vccint    |       1.000 |     0.044 |       0.037 |      0.007 |       NA    | Unspecified | NA         |
 | Vccaux    |       1.800 |     0.063 |       0.055 |      0.008 |       NA    | Unspecified | NA         |
 | Vcco33    |       3.300 |     0.001 |       0.000 |      0.001 |       NA    | Unspecified | NA         |
 | Vcco25    |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -90,12 +90,12 @@ Table of Contents
 | MGTAVcc   |       1.000 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | MGTAVtt   |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | MGTVccaux |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
-| Vccpint   |       1.000 |     0.758 |       0.727 |      0.031 |       NA    | Unspecified | NA         |
-| Vccpaux   |       1.800 |     0.060 |       0.050 |      0.010 |       NA    | Unspecified | NA         |
-| Vccpll    |       1.800 |     0.018 |       0.015 |      0.003 |       NA    | Unspecified | NA         |
-| Vcco_ddr  |       1.500 |     0.459 |       0.457 |      0.002 |       NA    | Unspecified | NA         |
-| Vcco_mio0 |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
-| Vcco_mio1 |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vccpint   |       1.000 |     0.752 |       0.722 |      0.030 |       NA    | Unspecified | NA         |
+| Vccpaux   |       1.800 |     0.061 |       0.051 |      0.010 |       NA    | Unspecified | NA         |
+| Vccpll    |       1.800 |     0.017 |       0.014 |      0.003 |       NA    | Unspecified | NA         |
+| Vcco_ddr  |       1.350 |     0.413 |       0.411 |      0.002 |       NA    | Unspecified | NA         |
+| Vcco_mio0 |       3.300 |     0.003 |       0.002 |      0.001 |       NA    | Unspecified | NA         |
+| Vcco_mio1 |       1.800 |     0.003 |       0.002 |      0.001 |       NA    | Unspecified | NA         |
 | Vccadc    |       1.800 |     0.020 |       0.000 |      0.020 |       NA    | Unspecified | NA         |
 +-----------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 
@@ -140,7 +140,7 @@ Table of Contents
 +------------+-----------------------------------------------------------------------------------------------+-----------------+
 | Clock      | Domain                                                                                        | Constraint (ns) |
 +------------+-----------------------------------------------------------------------------------------------+-----------------+
-| clk_fpga_0 | design_1_i/processing_system7_0/inst/FCLK_CLK_unbuffered[0]                                   |            10.0 |
+| clk_fpga_0 | design_1_i/processing_system7_1/inst/FCLK_CLK_unbuffered[0]                                   |            10.0 |
 | clkfbout   | design_1_i/d_axi_i2s_audio_0/U0/d_axi_i2s_audio_v2_0_AXI_L_inst/Inst_I2sCtl/Inst_Dcm/clkfbout |            50.0 |
 | clkout0    | design_1_i/d_axi_i2s_audio_0/U0/d_axi_i2s_audio_v2_0_AXI_L_inst/Inst_I2sCtl/Inst_Dcm/clkout0  |            81.4 |
 +------------+-----------------------------------------------------------------------------------------------+-----------------+
@@ -155,8 +155,8 @@ Table of Contents
 +--------------------------+-----------+
 | Name                     | Power (W) |
 +--------------------------+-----------+
-| design_1_wrapper         |     1.668 |
-|   design_1_i             |     1.666 |
+| design_1_wrapper         |     1.542 |
+|   design_1_i             |     1.540 |
 |     axi_dma_0            |     0.008 |
 |       U0                 |     0.008 |
 |     axi_iic_0            |     0.002 |
@@ -168,8 +168,8 @@ Table of Contents
 |       xbar               |     0.001 |
 |     d_axi_i2s_audio_0    |     0.116 |
 |       U0                 |     0.116 |
-|     processing_system7_0 |     1.532 |
-|       inst               |     1.532 |
+|     processing_system7_1 |     1.405 |
+|       inst               |     1.405 |
 +--------------------------+-----------+
 
 

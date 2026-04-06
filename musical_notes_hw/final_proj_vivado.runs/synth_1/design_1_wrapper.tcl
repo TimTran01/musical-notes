@@ -70,6 +70,8 @@ proc create_report { reportName command } {
   }
 }
 OPTRACE "synth_1" START { ROLLUP_AUTO }
+set_param chipscope.maxJobs 6
+set_param xicom.use_bs_reader 1
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7z010clg400-1
 
@@ -105,12 +107,12 @@ set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0_board.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0_ooc.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_axi_gpio_0_0/design_1_axi_gpio_0_0.xdc]
-set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/fifo_4/fifo_4.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/fifo_4/fifo_4_clocks.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/fifo_32/fifo_32.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/fifo_32/fifo_32_clocks.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/d_axi_i2s_audio.xdc]
-set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/fifo_4/fifo_4.xdc]
-set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_d_axi_i2s_audio_0_0/src/fifo_4/fifo_4_clocks.xdc]
+set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_processing_system7_1_1/design_1_processing_system7_1_1.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_auto_pc_0/design_1_auto_pc_0_ooc.xdc]
 set_property used_in_synthesis false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_auto_us_0/design_1_auto_us_0_clocks.xdc]
 set_property used_in_implementation false [get_files -all c:/Users/Tim/Documents/ECE_615/final_project/musical_notes_hw/final_proj_vivado.gen/sources_1/bd/design_1/ip/design_1_auto_us_0/design_1_auto_us_0_clocks.xdc]
