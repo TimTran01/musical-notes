@@ -7,12 +7,15 @@ Vivado 2023.2 project for the Zybo Z7-10 note detector hardware design.
 Local packaged Vivado IP cores:
 
 - `adc_sample_48khz_sampler` (`user.org:user:adc_sample_48khz_sampler:1.0`)
+- `hann_window_4096` (`user.org:user:hann_window_4096:1.0`)
 
-This IP is stored in `final_project_hardware/ip_repo/adc_sample_48khz_sampler_1_0` and instantiated in the main block design at `final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/design_1.bd`.
+The packaged IP sources are stored in `final_project_hardware/ip_repo` and instantiated in the main block design at `final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/design_1.bd`.
 
-The sampler IP provides a repeatable ADC sample source for the hardware design. It wraps a synchronous ROM initialized from generated 24-bit ADC sample data, then outputs samples at a 48 kHz average rate from the 50 MHz Zynq PS clock. The implementation details, generics, and signal timing are documented in the VHDL comments.
+The sampler IP provides a repeatable ADC sample source for the hardware design. It wraps a synchronous ROM initialized from generated 24-bit ADC sample data, then outputs samples at a 48 kHz average rate from the 50 MHz Zynq PS clock.
 
-The packaged IP includes the sampler RTL, ROM RTL, generated memory data, and Vivado XGUI metadata. The helper scripts in `tools/` regenerate the sample memory contents and repackage the IP when needed.
+The Hann window IP applies a 4096-point Hann window to the sample stream. It uses generated coefficient memory and preserves the full multiply result for downstream DSP processing.
+
+The packaged IP folders include RTL, memory data, and Vivado XGUI metadata. The helper scripts in `tools/` regenerate memory contents, package the IP, and update the block design when needed. Implementation details, generics, and timing behavior are documented in the VHDL comments.
 
 ## Rebuild
 

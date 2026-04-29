@@ -1,18 +1,19 @@
 {
    "ActiveEmotionalView":"Default View",
    "Default View_ScaleFactor":"1.0",
-   "Default View_TopLeft":"-50,-327",
+   "Default View_TopLeft":"-93,-371",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.5.8 2022-09-21 7111 VDI=41 GEI=38 GUI=JA:10.0
 #  -string -flagsOSRD
-preplace inst processing_system7_0 -pg 1 -lvl 2 -x 470 -y -160 -defaultsOSRD
-preplace inst adc_sample_48khz_sam_0 -pg 1 -lvl 1 -x 150 -y -170 -defaultsOSRD
-preplace inst rst_ps7_0_50M -pg 1 -lvl 3 -x 840 -y -100 -defaultsOSRD
-preplace netloc processing_system7_0_FCLK_CLK0 1 0 3 20 -270 NJ -270 670
+preplace inst processing_system7_0 -pg 1 -lvl 2 -x 530 -y -160 -defaultsOSRD
+preplace inst adc_sample_48khz_sam_0 -pg 1 -lvl 1 -x 150 -y -250 -defaultsOSRD
+preplace inst rst_ps7_0_50M -pg 1 -lvl 3 -x 900 -y -100 -defaultsOSRD
+preplace inst hann_window_4096_0 -pg 1 -lvl 1 -x 150 -y -20 -defaultsOSRD
+preplace netloc processing_system7_0_FCLK_CLK0 1 0 3 -30 -350 NJ -350 730
 preplace netloc processing_system7_0_FCLK_RESET0_N 1 2 1 N -120
-preplace netloc rst_ps7_0_50M_peripheral_aresetn 1 0 4 30 -260 NJ -260 NJ -260 1010
-levelinfo -pg 1 0 150 470 840 1030
-pagesize -pg 1 -db -bbox -sgen -260 -360 1030 200
+preplace netloc rst_ps7_0_50M_peripheral_aresetn 1 0 4 -20 -340 NJ -340 NJ -340 1070
+levelinfo -pg 1 -50 150 530 900 1090
+pagesize -pg 1 -db -bbox -sgen -260 -360 1090 200
 "
 }
 {

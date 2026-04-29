@@ -38,6 +38,10 @@ Thumbs.db
 **/*.sim/
 **/.Xil/
 
+# Orphaned Vivado duplicate IP output folders from block-design regeneration
+final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/ip/design_1_hann_window_4096_0_0_1/
+final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/ip/design_1_xlconstant_enable_1_0_1/
+
 # Vitis/Vitis HLS generated workspace and build output
 .metadata/
 .analytics/

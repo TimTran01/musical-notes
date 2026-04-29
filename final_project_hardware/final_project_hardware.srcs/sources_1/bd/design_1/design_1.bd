@@ -7,12 +7,15 @@
       "name": "design_1",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2023.2"
+      "tool_version": "2023.2",
+      "validated": "true"
     },
     "design_tree": {
       "processing_system7_0": "",
       "adc_sample_48khz_sam_0": "",
-      "rst_ps7_0_50M": ""
+      "rst_ps7_0_50M": "",
+      "hann_window_4096_0": "",
+      "xlconstant_enable_1": ""
     },
     "components": {
       "processing_system7_0": {
@@ -21,6 +24,11 @@
         "xci_name": "design_1_processing_system7_0_0",
         "xci_path": "ip\\design_1_processing_system7_0_0\\design_1_processing_system7_0_0.xci",
         "inst_hier_path": "processing_system7_0",
+        "parameters": {
+          "PCW_FPGA_FCLK0_ENABLE": {
+            "value": "1"
+          }
+        },
         "interface_ports": {
           "M_AXI_GP0": {
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
@@ -165,14 +173,62 @@
         "xci_name": "design_1_rst_ps7_0_50M_0",
         "xci_path": "ip\\design_1_rst_ps7_0_50M_0\\design_1_rst_ps7_0_50M_0.xci",
         "inst_hier_path": "rst_ps7_0_50M"
+      },
+      "hann_window_4096_0": {
+        "vlnv": "user.org:user:hann_window_4096:1.0",
+        "ip_revision": "1",
+        "xci_name": "design_1_hann_window_4096_0_0",
+        "xci_path": "ip\\design_1_hann_window_4096_0_0\\design_1_hann_window_4096_0_0.xci",
+        "inst_hier_path": "hann_window_4096_0"
+      },
+      "xlconstant_enable_1": {
+        "vlnv": "xilinx.com:ip:xlconstant:1.1",
+        "ip_revision": "8",
+        "xci_name": "design_1_xlconstant_enable_1_0",
+        "xci_path": "ip\\design_1_xlconstant_enable_1_0\\design_1_xlconstant_enable_1_0.xci",
+        "inst_hier_path": "xlconstant_enable_1",
+        "parameters": {
+          "CONST_VAL": {
+            "value": "1"
+          },
+          "CONST_WIDTH": {
+            "value": "1"
+          }
+        }
       }
     },
     "nets": {
+      "adc_sample_48khz_sam_0_frame_start": {
+        "ports": [
+          "adc_sample_48khz_sam_0/frame_start",
+          "hann_window_4096_0/frame_start_in"
+        ]
+      },
+      "adc_sample_48khz_sam_0_sample": {
+        "ports": [
+          "adc_sample_48khz_sam_0/sample",
+          "hann_window_4096_0/sample_in"
+        ]
+      },
+      "adc_sample_48khz_sam_0_sample_index": {
+        "ports": [
+          "adc_sample_48khz_sam_0/sample_index",
+          "hann_window_4096_0/sample_index_in"
+        ]
+      },
+      "adc_sample_48khz_sam_0_sample_valid": {
+        "ports": [
+          "adc_sample_48khz_sam_0/sample_valid",
+          "hann_window_4096_0/sample_valid_in"
+        ]
+      },
       "processing_system7_0_FCLK_CLK0": {
         "ports": [
           "processing_system7_0/FCLK_CLK0",
           "adc_sample_48khz_sam_0/clk",
-          "rst_ps7_0_50M/slowest_sync_clk"
+          "rst_ps7_0_50M/slowest_sync_clk",
+          "hann_window_4096_0/clk",
+          "processing_system7_0/M_AXI_GP0_ACLK"
         ]
       },
       "processing_system7_0_FCLK_RESET0_N": {
@@ -183,8 +239,20 @@
       },
       "rst_ps7_0_50M_peripheral_aresetn": {
         "ports": [
-          "rst_ps7_0_50M/peripheral_aresetn",
-          "adc_sample_48khz_sam_0/rst"
+          "rst_ps7_0_50M/peripheral_aresetn"
+        ]
+      },
+      "rst_ps7_0_50M_peripheral_reset": {
+        "ports": [
+          "rst_ps7_0_50M/peripheral_reset",
+          "adc_sample_48khz_sam_0/rst",
+          "hann_window_4096_0/rst"
+        ]
+      },
+      "xlconstant_enable_1_dout": {
+        "ports": [
+          "xlconstant_enable_1/dout",
+          "adc_sample_48khz_sam_0/enable"
         ]
       }
     }

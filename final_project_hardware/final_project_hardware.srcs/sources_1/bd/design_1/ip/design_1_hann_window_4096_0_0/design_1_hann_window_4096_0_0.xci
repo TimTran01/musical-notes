@@ -1,22 +1,18 @@
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "design_1_adc_sample_48khz_sam_0_0",
-    "cell_name": "adc_sample_48khz_sam_0",
-    "component_reference": "user.org:user:adc_sample_48khz_sampler:1.0",
+    "xci_name": "design_1_hann_window_4096_0_0",
+    "cell_name": "hann_window_4096_0",
+    "component_reference": "user.org:user:hann_window_4096:1.0",
     "ip_revision": "1",
-    "gen_directory": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_adc_sample_48khz_sam_0_0",
+    "gen_directory": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_hann_window_4096_0_0",
     "parameters": {
       "component_parameters": {
-        "CLK_FREQ_HZ": [ { "value": "50000000", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "SAMPLE_RATE_HZ": [ { "value": "48000", "resolve_type": "user", "format": "long", "usage": "all" } ],
-        "MEM_FILE": [ { "value": "adc_samples.mem", "resolve_type": "user", "usage": "all" } ],
-        "Component_Name": [ { "value": "design_1_adc_sample_48khz_sam_0_0", "resolve_type": "user", "usage": "all" } ]
+        "MEM_FILE": [ { "value": "hann_window.mem", "resolve_type": "user", "usage": "all" } ],
+        "Component_Name": [ { "value": "design_1_hann_window_4096_0_0", "resolve_type": "user", "usage": "all" } ]
       },
       "model_parameters": {
-        "CLK_FREQ_HZ": [ { "value": "50000000", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "SAMPLE_RATE_HZ": [ { "value": "48000", "resolve_type": "generated", "format": "long", "usage": "all" } ],
-        "MEM_FILE": [ { "value": "adc_samples.mem", "resolve_type": "generated", "usage": "all" } ]
+        "MEM_FILE": [ { "value": "hann_window.mem", "resolve_type": "generated", "usage": "all" } ]
       },
       "project_parameters": {
         "ARCHITECTURE": [ { "value": "zynq" } ],
@@ -35,7 +31,7 @@
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
         "IPREVISION": [ { "value": "1" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_adc_sample_48khz_sam_0_0" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_hann_window_4096_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
         "SWVERSION": [ { "value": "2023.2" } ],
@@ -46,11 +42,14 @@
       "ports": {
         "clk": [ { "direction": "in" } ],
         "rst": [ { "direction": "in" } ],
-        "enable": [ { "direction": "in" } ],
-        "sample": [ { "direction": "out", "size_left": "23", "size_right": "0" } ],
-        "sample_valid": [ { "direction": "out" } ],
-        "sample_index": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "frame_start": [ { "direction": "out" } ]
+        "sample_in": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
+        "sample_valid_in": [ { "direction": "in" } ],
+        "sample_index_in": [ { "direction": "in", "size_left": "11", "size_right": "0" } ],
+        "frame_start_in": [ { "direction": "in" } ],
+        "sample_out": [ { "direction": "out", "size_left": "47", "size_right": "0" } ],
+        "sample_valid_out": [ { "direction": "out" } ],
+        "sample_index_out": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
+        "frame_start_out": [ { "direction": "out" } ]
       },
       "interfaces": {
         "rst": {
