@@ -6,6 +6,8 @@ Thumbs.db
 *~
 ~$*
 .serena/
+final_project_hardware/.ip_packager_tmp/
+final_project_hardware/.bank1_ram_ip_packager_tmp/
 
 # Vivado transient state, logs, and generated build outputs
 .Xil/

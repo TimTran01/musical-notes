@@ -44,6 +44,10 @@ architecture rtl of adc_sample_48khz_sampler is
     --
     -- The ROM stores one 4096-sample frame. A 12-bit counter naturally wraps
     -- from 4095 back to 0 when the sample frame repeats.
+    --
+    -- These samples are time-domain ADC values. Piano-key/frequency selection
+    -- happens later in detector banks; this block only replays a sampled note
+    -- waveform at the requested sample rate.
     --------------------------------------------------------------------------
     constant ROM_DEPTH    : natural := 4096;
     constant ADDR_WIDTH   : natural := 12;
@@ -56,6 +60,10 @@ architecture rtl of adc_sample_48khz_sampler is
     -- CLK_FREQ_HZ. Every enabled clock adds SAMPLE_RATE_HZ. When the addition
     -- crosses CLK_FREQ_HZ, one sample period has elapsed and the accumulator
     -- wraps by subtracting CLK_FREQ_HZ.
+    --
+    -- This is the digital equivalent of a fractional clock divider. It avoids
+    -- needing a separate 48 kHz clock domain and keeps downstream sample-valid
+    -- pulses synchronous to the 50 MHz processing clock.
     --------------------------------------------------------------------------
     signal phase_accumulator : natural range 0 to CLK_FREQ_HZ - 1 := 0;
     signal sample_tick       : std_logic;
@@ -65,6 +73,10 @@ architecture rtl of adc_sample_48khz_sampler is
     --
     -- rom_addr_counter is the next ROM address to request. It advances only on
     -- sample_tick, so the ROM is read once per 48 kHz sample event.
+    --
+    -- The same counter value is later exported as sample_index_reg. Downstream
+    -- blocks use that index to align other per-sample metadata, such as Hann
+    -- coefficients, with the ADC sample.
     --------------------------------------------------------------------------
     signal rom_addr_counter : unsigned(ADDR_WIDTH - 1 downto 0) := (others => '0');
     signal rom_sample       : signed(SAMPLE_WIDTH - 1 downto 0);
@@ -75,6 +87,9 @@ architecture rtl of adc_sample_48khz_sampler is
     -- These registers update on sample_tick, the same clock edge on which the
     -- ROM produces the requested sample. This keeps the sample, index, valid
     -- flag, and frame_start pulse aligned for downstream processing.
+    --
+    -- frame_start is a one-clock marker for sample index 0. Later capture logic
+    -- can use it to start a new one-note analysis window.
     --------------------------------------------------------------------------
     signal sample_valid_reg : std_logic := '0';
     signal sample_index_reg : unsigned(ADDR_WIDTH - 1 downto 0) := (others => '0');
@@ -98,6 +113,10 @@ begin
     --
     -- This is combinational so adc_sample_rom sees en='1' on the same rising
     -- edge that the accumulator crosses the sample boundary.
+    --
+    -- sample_tick is not a clock. It is a one-cycle clock-enable pulse inside
+    -- the 50 MHz domain, which keeps the design single-clock and easier to
+    -- connect in the block diagram.
     --------------------------------------------------------------------------
     sample_tick <= '1' when (enable = '1') and
                             (phase_accumulator + SAMPLE_RATE_HZ >= CLK_FREQ_HZ)
@@ -126,6 +145,12 @@ begin
     --
     -- Reset restarts the playback frame at sample 0. Disabling the block pauses
     -- both phase and address state so sampling resumes from the same position.
+    --
+    -- On every enabled 50 MHz cycle, next_phase predicts the accumulator value
+    -- after adding one 48 kHz step. If that addition crosses CLK_FREQ_HZ,
+    -- sample_tick is high, the ROM address advances, and the extra phase is
+    -- kept by subtracting CLK_FREQ_HZ. That retained phase is what creates the
+    -- alternating 1041/1042-cycle spacing.
     --------------------------------------------------------------------------
     sampler_proc : process (clk)
         variable next_phase : natural range 0 to CLK_FREQ_HZ + SAMPLE_RATE_HZ;
@@ -140,10 +165,15 @@ begin
             elsif enable = '1' then
                 next_phase := phase_accumulator + SAMPLE_RATE_HZ;
 
+                -- Valid and frame_start are pulses, so their default value each
+                -- enabled cycle is low unless a sample boundary occurs below.
                 sample_valid_reg <= sample_tick;
                 frame_start_reg  <= '0';
 
                 if sample_tick = '1' then
+                    -- A sample boundary occurred. Keep the fractional remainder
+                    -- for the next interval and report the address that was just
+                    -- requested from the synchronous ROM.
                     phase_accumulator <= next_phase - CLK_FREQ_HZ;
                     sample_index_reg  <= rom_addr_counter;
 
@@ -152,14 +182,19 @@ begin
                     end if;
 
                     if rom_addr_counter = to_unsigned(ROM_DEPTH - 1, ADDR_WIDTH) then
+                        -- End of the 4096-sample note frame. Wrap to address 0
+                        -- so the generated ADC sample memory repeats cleanly.
                         rom_addr_counter <= (others => '0');
                     else
                         rom_addr_counter <= rom_addr_counter + 1;
                     end if;
                 else
+                    -- No sample produced this clock; only accumulated phase moves.
                     phase_accumulator <= next_phase;
                 end if;
             else
+                -- Pause output pulses while preserving phase/address state. This
+                -- lets capture resume from the same point if enable is reasserted.
                 sample_valid_reg <= '0';
                 frame_start_reg  <= '0';
             end if;
