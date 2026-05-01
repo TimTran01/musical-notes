@@ -58,7 +58,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>d0638bbc</spirit:value>
+            <spirit:value>f5c0d12b</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -74,7 +74,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>d0638bbc</spirit:value>
+            <spirit:value>f5c0d12b</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -185,7 +185,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">47</spirit:left>
+            <spirit:left spirit:format="long">23</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -260,7 +260,7 @@
       <spirit:file>
         <spirit:name>src/hann_window_4096.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_bb949239</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_4cfaed4a</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -287,7 +287,7 @@
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
-  <spirit:description>Applies a 4096-point Hann window to signed 24-bit ADC samples and outputs signed 48-bit fixed-point products.</spirit:description>
+  <spirit:description>Applies a 4096-point Hann window to signed 24-bit ADC samples and outputs signed 24-bit truncated samples.</spirit:description>
   <spirit:parameters>
     <spirit:parameter>
       <spirit:name>MEM_FILE</spirit:name>
@@ -312,13 +312,13 @@
       <xilinx:vendorDisplayName>ECE 615</xilinx:vendorDisplayName>
       <xilinx:vendorURL>https://example.local/ece615</xilinx:vendorURL>
       <xilinx:coreRevision>1</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-04-29T03:46:17Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-01T03:21:31Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2023.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="25031715"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="96d0b0c1"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="6f4339a4"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="1bdbacba"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="5431d848"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="2bc22478"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="4e76ebdd"/>
     </xilinx:packagingInfo>

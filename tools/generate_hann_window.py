@@ -26,8 +26,10 @@ from pathlib import Path
 WINDOW_LENGTH = 4096
 COEFF_BITS = 24
 COEFF_MAX = (1 << (COEFF_BITS - 1)) - 1
-SAMPLE_MASK = (1 << 24) - 1
-PRODUCT_MASK = (1 << 48) - 1
+SAMPLE_BITS = 24
+SAMPLE_MIN = -(1 << (SAMPLE_BITS - 1))
+SAMPLE_MAX = (1 << (SAMPLE_BITS - 1)) - 1
+FRACTIONAL_BITS = 23
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_HANN_OUTPUT = (
@@ -85,6 +87,11 @@ def to_hex(value: int, bits: int) -> str:
     return f"{value & ((1 << bits) - 1):0{hex_digits}X}"
 
 
+def clamp_sample(value: int) -> int:
+    """Limit a value to the signed 24-bit range used by the Hann output."""
+    return max(SAMPLE_MIN, min(SAMPLE_MAX, value))
+
+
 def generate_coefficients(length: int = WINDOW_LENGTH) -> list[int]:
     """Generate every fixed-point Hann coefficient for one full frame."""
     return [quantize_coefficient(hann_coefficient(index, length)) for index in range(length)]
@@ -98,18 +105,31 @@ def write_hann_mem(coefficients: list[int], output_path: Path) -> None:
             mem_file.write(f"{to_hex(coefficient, COEFF_BITS)}\n")
 
 
-def write_expected_vectors(coefficients: list[int], output_path: Path) -> None:
-    """Write Python-computed product values for the VHDL testbench.
+def truncate_hann_product(sample: int, coefficient: int) -> int:
+    """Apply Q1.23 coefficient and truncate back to signed 24-bit sample data.
 
-    Each line is one signed 48-bit product in two's-complement hexadecimal. The
-    VHDL testbench applies the matching hard-coded sample/index vector and then
-    checks the DUT output against these Python-computed products.
+    Hardware multiplies signed 24-bit sample data by a positive Q1.23 Hann
+    coefficient. That creates a signed Q24.23 product. The revised Hann IP
+    discards the 23 fractional bits with an arithmetic right shift, leaving an
+    ADC-like signed 24-bit integer output.
+    """
+    product = sample * coefficient
+    truncated = product >> FRACTIONAL_BITS
+    return clamp_sample(truncated)
+
+
+def write_expected_vectors(coefficients: list[int], output_path: Path) -> None:
+    """Write Python-computed 24-bit Hann outputs for the VHDL testbench.
+
+    Each line is one signed 24-bit two's-complement value. The VHDL testbench
+    applies the matching hard-coded sample/index vector and checks the DUT output
+    against this Python model of the truncation policy.
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="ascii", newline="\n") as expected_file:
         for vector in TEST_VECTORS:
-            product = vector.sample * coefficients[vector.index]
-            expected_file.write(f"{to_hex(product, 48)}\n")
+            sample = truncate_hann_product(vector.sample, coefficients[vector.index])
+            expected_file.write(f"{to_hex(sample, SAMPLE_BITS)}\n")
 
 
 def parse_args() -> argparse.Namespace:
@@ -142,7 +162,7 @@ def main() -> None:
     center_right = WINDOW_LENGTH // 2
 
     print(f"Wrote {len(coefficients)} Hann coefficients to {args.hann_output}")
-    print(f"Wrote {len(TEST_VECTORS)} expected products to {args.expected_output}")
+    print(f"Wrote {len(TEST_VECTORS)} expected 24-bit outputs to {args.expected_output}")
     print(f"Coefficient[0] = {to_hex(coefficients[0], COEFF_BITS)}")
     print(f"Coefficient[{center_left}] = {to_hex(coefficients[center_left], COEFF_BITS)}")
     print(f"Coefficient[{center_right}] = {to_hex(coefficients[center_right], COEFF_BITS)}")

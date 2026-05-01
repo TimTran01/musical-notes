@@ -49,7 +49,7 @@ set core [ipx::current_core]
 
 set_property name hann_window_4096 $core
 set_property display_name {Hann Window 4096} $core
-set_property description {Applies a 4096-point Hann window to signed 24-bit ADC samples and outputs signed 48-bit fixed-point products.} $core
+set_property description {Applies a 4096-point Hann window to signed 24-bit ADC samples and outputs signed 24-bit truncated samples.} $core
 set_property vendor_display_name {ECE 615} $core
 set_property company_url {https://example.local/ece615} $core
 

@@ -3,7 +3,7 @@
 --
 -- Description:
 --   Self-checking simulation for the bank-1 Hann RAM IP. The testbench drives a
---   deterministic 48-bit sample stream, verifies the decimate-by-16 write
+--   deterministic 24-bit sample stream, verifies the decimate-by-16 write
 --   cadence, reads back selected RAM addresses, confirms stop-on-full behavior,
 --   and checks reset/restart.
 ----------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ architecture sim of hann_window_bank1_ram_tb is
     constant CLK_PERIOD       : time := 10 ns;
     constant RAM_DEPTH        : natural := 4096;
     constant ADDR_WIDTH       : natural := 12;
-    constant DATA_WIDTH       : natural := 48;
+    constant DATA_WIDTH       : natural := 24;
     constant DECIMATION_RATIO : natural := 16;
 
     subtype sample_t is signed(DATA_WIDTH - 1 downto 0);

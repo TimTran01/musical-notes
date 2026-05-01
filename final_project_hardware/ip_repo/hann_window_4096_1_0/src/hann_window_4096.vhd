@@ -11,11 +11,14 @@
 --
 --   Coefficients are stored as unsigned Q1.23 fixed-point values. The largest
 --   coefficient is close to 1.0 and is encoded near 0x7FFFFF. The input sample
---   is signed 24-bit. Multiplying these two 24-bit operands produces a signed
---   48-bit fixed-point product.
+--   is signed 24-bit. Multiplying these two 24-bit operands produces an
+--   internal signed 48-bit Q24.23 fixed-point product.
 --
---   The output is intentionally not rounded or truncated. Keeping all 48 bits
---   preserves fractional window energy for the future Goertzel accumulator.
+--   The public output is signed 24-bit. The 48-bit product is arithmetically
+--   shifted right by 23 bits, discarding the fractional Q1.23 coefficient bits.
+--   This is intentional truncation, not rounding. It keeps the hardware simple
+--   and makes the output look like ADC-width integer data again for the RAM and
+--   later Goertzel blocks.
 --
 -- Timing:
 --   sample_valid_out is asserted one clock after sample_valid_in. sample_out,
@@ -42,7 +45,7 @@ entity hann_window_4096 is
         sample_valid_in  : in  std_logic;
         sample_index_in  : in  unsigned(11 downto 0);
         frame_start_in   : in  std_logic;
-        sample_out       : out signed(47 downto 0);
+        sample_out       : out signed(23 downto 0);
         sample_valid_out : out std_logic;
         sample_index_out : out unsigned(11 downto 0);
         frame_start_out  : out std_logic
@@ -56,12 +59,19 @@ architecture rtl of hann_window_4096 is
     --
     -- A 12-bit sample index selects one of 4096 Hann coefficients. The 24-bit
     -- coefficient width matches the ADC sample width, so the raw product is
-    -- exactly 48 bits.
+    -- exactly 48 bits. The public output width stays at 24 bits so downstream
+    -- RAM and detector blocks can keep an ADC-like data path.
     --------------------------------------------------------------------------
     constant WINDOW_LENGTH : natural := 4096;
     constant INDEX_WIDTH   : natural := 12;
     constant SAMPLE_WIDTH  : natural := 24;
     constant PRODUCT_WIDTH : natural := 48;
+
+    -- The coefficient format is Q1.23: one integer/sign-position bit and
+    -- twenty-three fractional bits. After multiplication, those 23 fractional
+    -- bits are still present in the low side of the 48-bit product. Shifting
+    -- right by this amount converts the product back to a 24-bit integer scale.
+    constant FRACTION_BITS : natural := 23;
 
     --------------------------------------------------------------------------
     -- Coefficient ROM storage.
@@ -135,9 +145,9 @@ architecture rtl of hann_window_4096 is
     -- Registered outputs.
     --
     -- The multiplier result is registered so downstream DSP logic sees a stable
-    -- 48-bit fixed-point sample only when sample_valid_out is asserted.
+    -- truncated 24-bit sample only when sample_valid_out is asserted.
     --------------------------------------------------------------------------
-    signal sample_out_reg       : signed(PRODUCT_WIDTH - 1 downto 0) := (others => '0');
+    signal sample_out_reg       : signed(SAMPLE_WIDTH - 1 downto 0) := (others => '0');
     signal sample_valid_out_reg : std_logic := '0';
     signal sample_index_out_reg : unsigned(INDEX_WIDTH - 1 downto 0) := (others => '0');
     signal frame_start_out_reg  : std_logic := '0';
@@ -154,6 +164,7 @@ begin
     -- latency from input valid to output valid.
     --------------------------------------------------------------------------
     window_proc : process (clk)
+        variable product_48 : signed(PRODUCT_WIDTH - 1 downto 0);
     begin
         if rising_edge(clk) then
             if rst = '1' then
@@ -167,7 +178,34 @@ begin
                 sample_index_out_reg <= (others => '0');
                 frame_start_out_reg  <= '0';
             else
-                sample_out_reg       <= sample_stage1 * coeff_stage1;
+                ------------------------------------------------------------------
+                -- Full-precision fixed-point multiply.
+                --
+                -- sample_stage1 is a signed 24-bit integer ADC value.
+                -- coeff_stage1 is a non-negative Q1.23 Hann coefficient.
+                -- The product is therefore Q24.23 in a signed 48-bit container:
+                --   upper bits  = signed integer magnitude
+                --   lower bits  = fractional contribution from the coefficient
+                ------------------------------------------------------------------
+                product_48 := sample_stage1 * coeff_stage1;
+
+                ------------------------------------------------------------------
+                -- Truncate the Q24.23 product back to a signed 24-bit sample.
+                --
+                -- shift_right() on a signed value performs an arithmetic shift,
+                -- so negative samples keep their sign while the 23 fractional
+                -- bits are discarded. This is equivalent to dividing by 2^23 and
+                -- keeping only the integer result. No rounding is added here.
+                --
+                -- After the shift, resize() keeps the ADC-width result. For valid
+                -- Hann coefficients in the range 0.0 to just under 1.0, the
+                -- shifted value remains in the original signed 24-bit sample
+                -- range, so resize mainly removes redundant sign-extension bits.
+                ------------------------------------------------------------------
+                sample_out_reg <= resize(
+                    shift_right(product_48, FRACTION_BITS),
+                    SAMPLE_WIDTH
+                );
                 sample_valid_out_reg <= valid_stage1;
                 sample_index_out_reg <= index_stage1;
                 frame_start_out_reg  <= frame_start_stage1;

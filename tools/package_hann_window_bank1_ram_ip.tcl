@@ -46,7 +46,7 @@ set core [ipx::current_core]
 
 set_property name hann_window_bank1_ram $core
 set_property display_name {Hann Window Bank 1 RAM} $core
-set_property description {Stores 4096 decimated 3 kHz, signed 48-bit Hann-windowed samples for bank 1.} $core
+set_property description {Stores 4096 decimated 3 kHz, signed 24-bit Hann-windowed samples for bank 1.} $core
 set_property vendor_display_name {ECE 615} $core
 set_property company_url {https://example.local/ece615} $core
 

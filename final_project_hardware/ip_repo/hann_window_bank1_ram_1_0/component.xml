@@ -58,7 +58,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>c9b82cdd</spirit:value>
+            <spirit:value>6d7710f7</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -74,7 +74,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>c9b82cdd</spirit:value>
+            <spirit:value>6d7710f7</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -125,7 +125,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">47</spirit:left>
+            <spirit:left spirit:format="long">23</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -185,7 +185,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">47</spirit:left>
+            <spirit:left spirit:format="long">23</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -235,7 +235,7 @@
       <spirit:file>
         <spirit:name>src/hann_window_bank1_ram.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_c9b82cdd</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_6d7710f7</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -257,7 +257,7 @@
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
-  <spirit:description>Stores 4096 decimated 3 kHz, signed 48-bit Hann-windowed samples for bank 1.</spirit:description>
+  <spirit:description>Stores 4096 decimated 3 kHz, signed 24-bit Hann-windowed samples for bank 1.</spirit:description>
   <spirit:parameters>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
@@ -284,13 +284,13 @@
       <xilinx:vendorDisplayName>ECE 615</xilinx:vendorDisplayName>
       <xilinx:vendorURL>https://example.local/ece615</xilinx:vendorURL>
       <xilinx:coreRevision>1</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-04-30T05:57:48Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-01T03:21:42Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2023.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="25031715"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="7f2cad12"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="90d806d2"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="83bf02c3"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="52756f3e"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="37d068ed"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
