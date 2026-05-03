@@ -1,0 +1,98 @@
+{
+  "schema": "xilinx.com:schema:json_instance:1.0",
+  "ip_inst": {
+    "xci_name": "design_1_goertzel_engines_3bank_0_9",
+    "cell_name": "goertzel_engines_3bank_0",
+    "component_reference": "user.org:user:goertzel_engines_3bank:1.0",
+    "ip_revision": "1",
+    "gen_directory": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_goertzel_engines_3bank_0_9",
+    "parameters": {
+      "component_parameters": {
+        "BANK1_COEFF_FILE": [ { "value": "goertzel_bank1_coeff.mem", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "BANK2_COEFF_FILE": [ { "value": "goertzel_bank2_coeff.mem", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "BANK3_COEFF_FILE": [ { "value": "goertzel_bank3_coeff.mem", "value_src": "user", "resolve_type": "user", "usage": "all" } ],
+        "Component_Name": [ { "value": "design_1_goertzel_engines_3bank_0_9", "resolve_type": "user", "usage": "all" } ]
+      },
+      "model_parameters": {
+        "BANK1_COEFF_FILE": [ { "value": "goertzel_bank1_coeff.mem", "resolve_type": "generated", "usage": "all" } ],
+        "BANK2_COEFF_FILE": [ { "value": "goertzel_bank2_coeff.mem", "resolve_type": "generated", "usage": "all" } ],
+        "BANK3_COEFF_FILE": [ { "value": "goertzel_bank3_coeff.mem", "resolve_type": "generated", "usage": "all" } ]
+      },
+      "project_parameters": {
+        "ARCHITECTURE": [ { "value": "zynq" } ],
+        "BASE_BOARD_PART": [ { "value": "digilentinc.com:zybo-z7-10:part0:1.1" } ],
+        "BOARD_CONNECTIONS": [ { "value": "" } ],
+        "DEVICE": [ { "value": "xc7z010" } ],
+        "PACKAGE": [ { "value": "clg400" } ],
+        "PREFHDL": [ { "value": "VERILOG" } ],
+        "SILICON_REVISION": [ { "value": "" } ],
+        "SIMULATOR_LANGUAGE": [ { "value": "MIXED" } ],
+        "SPEEDGRADE": [ { "value": "-1" } ],
+        "STATIC_POWER": [ { "value": "" } ],
+        "TEMPERATURE_GRADE": [ { "value": "" } ]
+      },
+      "runtime_parameters": {
+        "IPCONTEXT": [ { "value": "IP_Integrator" } ],
+        "IPREVISION": [ { "value": "1" } ],
+        "MANAGED": [ { "value": "TRUE" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_goertzel_engines_3bank_0_9" } ],
+        "SELECTEDSIMMODEL": [ { "value": "" } ],
+        "SHAREDDIR": [ { "value": "../../ipshared" } ],
+        "SWVERSION": [ { "value": "2023.2" } ],
+        "SYNTHESISFLOW": [ { "value": "OUT_OF_CONTEXT" } ]
+      }
+    },
+    "boundary": {
+      "ports": {
+        "sys_clk": [ { "direction": "in" } ],
+        "sys_rst": [ { "direction": "in" } ],
+        "RAM_DATA3": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
+        "RAM_DATA12": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
+        "RAM_DATA48": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
+        "G_EN3": [ { "direction": "in" } ],
+        "G_EN12": [ { "direction": "in" } ],
+        "G_EN48": [ { "direction": "in" } ],
+        "RAM_ADDR3": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
+        "RAM_ADDR12": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
+        "RAM_ADDR48": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
+        "G_DONE3": [ { "direction": "out" } ],
+        "G_DONE12": [ { "direction": "out" } ],
+        "G_DONE48": [ { "direction": "out" } ],
+        "NOTE_KEY": [ { "direction": "out", "size_left": "6", "size_right": "0" } ],
+        "NOTE_VALID": [ { "direction": "out" } ]
+      },
+      "interfaces": {
+        "sys_rst": {
+          "vlnv": "xilinx.com:signal:reset:1.0",
+          "abstraction_type": "xilinx.com:signal:reset_rtl:1.0",
+          "mode": "slave",
+          "parameters": {
+            "POLARITY": [ { "value": "ACTIVE_HIGH", "value_src": "constant_prop", "value_permission": "bd_and_user", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
+            "INSERT_VIP": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "simulation.rtl", "is_ips_inferred": true, "is_static_object": false } ]
+          },
+          "port_maps": {
+            "RST": [ { "physical_name": "sys_rst" } ]
+          }
+        },
+        "sys_clk": {
+          "vlnv": "xilinx.com:signal:clock:1.0",
+          "abstraction_type": "xilinx.com:signal:clock_rtl:1.0",
+          "mode": "slave",
+          "parameters": {
+            "ASSOCIATED_RESET": [ { "value": "sys_rst", "value_src": "constant", "value_permission": "bd_and_user", "usage": "all" } ],
+            "FREQ_HZ": [ { "value": "50000000", "value_src": "user_prop", "value_permission": "bd_and_user", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
+            "FREQ_TOLERANCE_HZ": [ { "value": "0", "value_permission": "bd_and_user", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
+            "PHASE": [ { "value": "0.0", "value_permission": "bd_and_user", "resolve_type": "generated", "format": "float", "is_ips_inferred": true, "is_static_object": false } ],
+            "CLK_DOMAIN": [ { "value": "design_1_processing_system7_0_0_FCLK_CLK0", "value_src": "default_prop", "value_permission": "bd_and_user", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
+            "ASSOCIATED_BUSIF": [ { "value": "", "value_permission": "bd_and_user", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
+            "ASSOCIATED_PORT": [ { "value": "", "value_permission": "bd_and_user", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
+            "INSERT_VIP": [ { "value": "0", "resolve_type": "user", "format": "long", "usage": "simulation.rtl", "is_ips_inferred": true, "is_static_object": false } ]
+          },
+          "port_maps": {
+            "CLK": [ { "physical_name": "sys_clk" } ]
+          }
+        }
+      }
+    }
+  }
+}
