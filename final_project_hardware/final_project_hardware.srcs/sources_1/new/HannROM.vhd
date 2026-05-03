@@ -50,48 +50,48 @@ architecture RTL of HannROM is
     -- ROM now only stores 2048 samples (Half-depth)
     type rom_type is array (0 to 2047) of std_logic_vector(23 downto 0);
     constant ROM : rom_type := (  
-    x"00000", x"0000A", x"00027", x"00059", x"0009E", x"000F7", x"00163", x"001E4",
-    x"00278", x"00320", x"003DB", x"004AB", x"0058E", x"00685", x"0078F", x"008AE",
-    x"009E0", x"00B26", x"00C7F", x"00DEC", x"00F6D", x"01102", x"012AB", x"01467",
-    x"01637", x"0181B", x"01A12", x"01C1D", x"01E3C", x"0206F", x"022B5", x"02510",
-    x"0277D", x"029FF", x"02C94", x"02F3D", x"031FA", x"034CA", x"037AF", x"03AA7",
-    x"03DB2", x"040D1", x"04404", x"0474B", x"04AA6", x"04E14", x"05196", x"0552B",
-    x"058D4", x"05C91", x"06062", x"06446", x"0683E", x"06C4A", x"07069", x"0749C",
-    x"078E3", x"07D3E", x"081AC", x"0862D", x"08AC3", x"08F6C", x"09429", x"098F9",
-    x"09DDD", x"0A2D5", x"0A7E0", x"0ACFF", x"0B232", x"0B778", x"0BCD2", x"0C240",
-    x"0C7C1", x"0CD56", x"0D2FE", x"0D8BA", x"0DE8A", x"0E46D", x"0EA64", x"0F06F",
-    x"0F68D", x"0FCBF", x"10304", x"1095D", x"10FCA", x"1164A", x"11CDD", x"12385",
-    x"12A3F", x"1310E", x"137F0", x"13EE5", x"145EE", x"14D0B", x"1543B", x"15B7F",
-    x"162D6", x"16A41", x"171BF", x"17951", x"180F7", x"188B0", x"1907C", x"1985C",
-    x"1A04F", x"1A856", x"1B071", x"1B89F", x"1C0E0", x"1C935", x"1D19D", x"1DA19",
-    x"1E2A8", x"1EB4B", x"1F401", x"1FCCB", x"205A8", x"20E98", x"2179C", x"220B4",
-    x"229DE", x"2331D", x"23C6E", x"245D3", x"24F4C", x"258D8", x"26277", x"26C29",
-    x"275EF", x"27FC9", x"289B5", x"293B5", x"29DC9", x"2A7EF", x"2B229", x"2BC77",
-    x"2C6D8", x"2D14C", x"2DBD3", x"2E66E", x"2F11C", x"2FBDD", x"306B1", x"31199",
-    x"31C94", x"327A3", x"332C4", x"33DF9", x"34942", x"3549D", x"3600C", x"36B8D",
-    x"37722", x"382CB", x"38E86", x"39A55", x"3A637", x"3B22C", x"3BE34", x"3CA50",
-    x"3D67E", x"3E2C0", x"3EF15", x"3FB7D", x"407F8", x"41486", x"42128", x"42DDC",
-    x"43AA4", x"4477F", x"4546D", x"4616D", x"46E81", x"47BA8", x"488E3", x"49630",
-    x"4A390", x"4B103", x"4BE89", x"4CC23", x"4D9CF", x"4E78E", x"4F560", x"50346",
-    x"5113E", x"51F49", x"52D67", x"53B98", x"549DC", x"55833", x"5669D", x"5751A",
-    x"583AA", x"5924C", x"5A102", x"5AFCA", x"5BEA6", x"5CD94", x"5DC95", x"5EBA8",
-    x"5FACF", x"60A09", x"61955", x"628B4", x"63826", x"647AB", x"65742", x"666EC",
-    x"676A9", x"68679", x"6965C", x"6A651", x"6B659", x"6C673", x"6D6A1", x"6E6E1",
-    x"6F734", x"70799", x"71811", x"7289C", x"73939", x"749E9", x"75AAC", x"76B81",
-    x"77C69", x"78D64", x"79E71", x"7AF90", x"7C0C2", x"7D207", x"7E35E", x"7F4C8",
-    x"80644", x"817D3", x"82975", x"83B28", x"84CEF", x"85EC8", x"870B3", x"882B0",
-    x"894C1", x"8A6E3", x"8B918", x"8CB5F", x"8DDB9", x"8F025", x"902A4", x"91535",
-    x"927D8", x"93A8D", x"94D55", x"9602F", x"9731C", x"9861B", x"9992C", x"9AC4F",
-    x"9BF85", x"9D2CC", x"9E626", x"9F993", x"A0D11", x"A20A2", x"A3445", x"A47FA",
-    x"A5BC1", x"A6F9A", x"A8386", x"A9784", x"AAB93", x"ABFB5", x"AD3E9", x"AE82F",
-    x"AFC87", x"B10F1", x"B256D", x"B39FC", x"B4E9C", x"B634E", x"B7812", x"B8CE8",
-    x"BA1D1", x"BB6CB", x"BCBD7", x"BE0F5", x"BF625", x"C0B66", x"C20BA", x"C3620",
-    x"C4B97", x"C6120", x"C76BC", x"C8C68", x"CA227", x"CB7F8", x"CCDDA", x"CE3CE",
-    x"CF9D4", x"D0FEC", x"D2615", x"D3C50", x"D529D", x"D68FC", x"D7F6C", x"D95ED",
-    x"DAC81", x"DC326", x"DD9DD", x"DF0A5", x"E077F", x"E1E6B", x"E3568", x"E4C76",
-    x"E6397", x"E7AC8", x"E920C", x"EA960", x"EC0C7", x"ED83E", x"EEFC8", x"F0762",
-    x"F1F0E", x"F36CC", x"F4E9B", x"F667B", x"F7E6C", x"F966F", x"FAE84", x"FC6A9",
-    x"FDEE0", x"FF729", x"100F82", x"1027ED", x"104069", x"1058F6", x"107195", x"108A45",
+    x"000000", x"00000A", x"000027", x"000059", x"00009E", x"0000F7", x"000163", x"0001E4",
+    x"000278", x"000320", x"0003DB", x"0004AB", x"00058E", x"000685", x"00078F", x"0008AE",
+    x"0009E0", x"000B26", x"000C7F", x"000DEC", x"000F6D", x"001102", x"0012AB", x"001467",
+    x"001637", x"00181B", x"001A12", x"001C1D", x"001E3C", x"00206F", x"0022B5", x"002510",
+    x"00277D", x"0029FF", x"002C94", x"002F3D", x"0031FA", x"0034CA", x"0037AF", x"003AA7",
+    x"003DB2", x"0040D1", x"004404", x"00474B", x"004AA6", x"004E14", x"005196", x"00552B",
+    x"0058D4", x"005C91", x"006062", x"006446", x"00683E", x"006C4A", x"007069", x"00749C",
+    x"0078E3", x"007D3E", x"0081AC", x"00862D", x"008AC3", x"008F6C", x"009429", x"0098F9",
+    x"009DDD", x"00A2D5", x"00A7E0", x"00ACFF", x"00B232", x"00B778", x"00BCD2", x"00C240",
+    x"00C7C1", x"00CD56", x"00D2FE", x"00D8BA", x"00DE8A", x"00E46D", x"00EA64", x"00F06F",
+    x"00F68D", x"00FCBF", x"010304", x"01095D", x"010FCA", x"01164A", x"011CDD", x"012385",
+    x"012A3F", x"01310E", x"0137F0", x"013EE5", x"0145EE", x"014D0B", x"01543B", x"015B7F",
+    x"0162D6", x"016A41", x"0171BF", x"017951", x"0180F7", x"0188B0", x"01907C", x"01985C",
+    x"01A04F", x"01A856", x"01B071", x"01B89F", x"01C0E0", x"01C935", x"01D19D", x"01DA19",
+    x"01E2A8", x"01EB4B", x"01F401", x"01FCCB", x"0205A8", x"020E98", x"02179C", x"0220B4",
+    x"0229DE", x"02331D", x"023C6E", x"0245D3", x"024F4C", x"0258D8", x"026277", x"026C29",
+    x"0275EF", x"027FC9", x"0289B5", x"0293B5", x"029DC9", x"02A7EF", x"02B229", x"02BC77",
+    x"02C6D8", x"02D14C", x"02DBD3", x"02E66E", x"02F11C", x"02FBDD", x"0306B1", x"031199",
+    x"031C94", x"0327A3", x"0332C4", x"033DF9", x"034942", x"03549D", x"03600C", x"036B8D",
+    x"037722", x"0382CB", x"038E86", x"039A55", x"03A637", x"03B22C", x"03BE34", x"03CA50",
+    x"03D67E", x"03E2C0", x"03EF15", x"03FB7D", x"0407F8", x"041486", x"042128", x"042DDC",
+    x"043AA4", x"04477F", x"04546D", x"04616D", x"046E81", x"047BA8", x"0488E3", x"049630",
+    x"04A390", x"04B103", x"04BE89", x"04CC23", x"04D9CF", x"04E78E", x"04F560", x"050346",
+    x"05113E", x"051F49", x"052D67", x"053B98", x"0549DC", x"055833", x"05669D", x"05751A",
+    x"0583AA", x"05924C", x"05A102", x"05AFCA", x"05BEA6", x"05CD94", x"05DC95", x"05EBA8",
+    x"05FACF", x"060A09", x"061955", x"0628B4", x"063826", x"0647AB", x"065742", x"0666EC",
+    x"0676A9", x"068679", x"06965C", x"06A651", x"06B659", x"06C673", x"06D6A1", x"06E6E1",
+    x"06F734", x"070799", x"071811", x"07289C", x"073939", x"0749E9", x"075AAC", x"076B81",
+    x"077C69", x"078D64", x"079E71", x"07AF90", x"07C0C2", x"07D207", x"07E35E", x"07F4C8",
+    x"080644", x"0817D3", x"082975", x"083B28", x"084CEF", x"085EC8", x"0870B3", x"0882B0",
+    x"0894C1", x"08A6E3", x"08B918", x"08CB5F", x"08DDB9", x"08F025", x"0902A4", x"091535",
+    x"0927D8", x"093A8D", x"094D55", x"09602F", x"09731C", x"09861B", x"09992C", x"09AC4F",
+    x"09BF85", x"09D2CC", x"09E626", x"09F993", x"0A0D11", x"0A20A2", x"0A3445", x"0A47FA",
+    x"0A5BC1", x"0A6F9A", x"0A8386", x"0A9784", x"0AAB93", x"0ABFB5", x"0AD3E9", x"0AE82F",
+    x"0AFC87", x"0B10F1", x"0B256D", x"0B39FC", x"0B4E9C", x"0B634E", x"0B7812", x"0B8CE8",
+    x"0BA1D1", x"0BB6CB", x"0BCBD7", x"0BE0F5", x"0BF625", x"0C0B66", x"0C20BA", x"0C3620",
+    x"0C4B97", x"0C6120", x"0C76BC", x"0C8C68", x"0CA227", x"0CB7F8", x"0CCDDA", x"0CE3CE",
+    x"0CF9D4", x"0D0FEC", x"0D2615", x"0D3C50", x"0D529D", x"0D68FC", x"0D7F6C", x"0D95ED",
+    x"0DAC81", x"0DC326", x"0DD9DD", x"0DF0A5", x"0E077F", x"0E1E6B", x"0E3568", x"0E4C76",
+    x"0E6397", x"0E7AC8", x"0E920C", x"0EA960", x"0EC0C7", x"0ED83E", x"0EEFC8", x"0F0762",
+    x"0F1F0E", x"0F36CC", x"0F4E9B", x"0F667B", x"0F7E6C", x"0F966F", x"0FAE84", x"0FC6A9",
+    x"0FDEE0", x"0FF729", x"100F82", x"1027ED", x"104069", x"1058F6", x"107195", x"108A45",
     x"10A306", x"10BBD8", x"10D4BB", x"10EDB0", x"1106B5", x"111FCC", x"1138F4", x"11522D",
     x"116B77", x"1184D2", x"119E3E", x"11B7BB", x"11D149", x"11EAE8", x"120498", x"121E5A",
     x"12382C", x"12520F", x"126C02", x"128607", x"12A01D", x"12BA44", x"12D47B", x"12EEC3",
@@ -317,7 +317,7 @@ begin
                 internal_addr0 <= to_integer(unsigned(addr0));
             else
                 -- Subtract from max index to mirror the first half
-                internal_addr0 <= 2047 - to_integer(unsigned(addr0));
+                internal_addr0 <= 4095 - to_integer(unsigned(addr0));
             end if;
             
             data0 <= ROM(internal_addr0);
@@ -327,7 +327,7 @@ begin
                 internal_addr1 <= to_integer(unsigned(addr1));
             else
                 -- Subtract from max index to mirror the first half
-                internal_addr1 <= 2047 - to_integer(unsigned(addr1));
+                internal_addr1 <= 4095 - to_integer(unsigned(addr1));
             end if;
             
             data1 <= ROM(internal_addr1);
@@ -337,7 +337,7 @@ begin
                 internal_addr2 <= to_integer(unsigned(addr2));
             else
                 -- Subtract from max index to mirror the first half
-                internal_addr2 <= 2047 - to_integer(unsigned(addr2));
+                internal_addr2 <= 4095 - to_integer(unsigned(addr2));
             end if;
             
             data2 <= ROM(internal_addr2);

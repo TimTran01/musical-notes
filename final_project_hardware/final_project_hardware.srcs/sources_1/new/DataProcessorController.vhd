@@ -95,21 +95,20 @@ begin
             
         when s_WERAM =>
             RAM_WE3 <= '1';
+            f_en_cnt3 <= '1';
             r_SM_Main3 <= s_IDLE;
             if f_done_3 = '1' then
-                r_SM_Main3 <= s_DONECHK;  
+                r_SM_Main3 <= s_DOG;  
             end if;
             
         when s_DONECHK =>
             if G_DONE3 = '1' then
-                r_SM_Main3 <= s_DOG; 
+                r_SM_Main3 <= s_IDLE; 
             end if;
         
         when s_DOG =>
             G_EN3 <= '1';
-            if G_DONE3 = '0' then
-                r_SM_Main3 <= s_IDLE;    
-            end if;
+            r_SM_Main3 <= s_DONECHK;
         
         when others =>
             r_SM_Main3 <= s_IDLE; 
@@ -143,21 +142,20 @@ begin
             
         when s_WERAM =>
             RAM_WE12 <= '1';
+            f_en_cnt12 <= '1';
             r_SM_Main12 <= s_IDLE;
             if f_done_12 = '1' then
-                r_SM_Main12 <= s_DONECHK;  
+                r_SM_Main12 <= s_DOG;  
             end if;
             
         when s_DONECHK =>
             if G_DONE12 = '1' then
-                r_SM_Main12 <= s_DOG; 
+                r_SM_Main12 <= s_IDLE; 
             end if;
         
         when s_DOG =>
             G_EN12 <= '1';
-            if G_DONE12 = '0' then
-                r_SM_Main12 <= s_IDLE;    
-            end if;
+            r_SM_Main12 <= s_DONECHK;
         
         when others =>
             r_SM_Main12 <= s_IDLE; 
@@ -191,21 +189,20 @@ begin
             
         when s_WERAM =>
             RAM_WE48 <= '1';
+            f_en_cnt48 <= '1';
             r_SM_Main48 <= s_IDLE;
             if f_done_48 = '1' then
-                r_SM_Main48 <= s_DONECHK;  
+                r_SM_Main48 <= s_DOG;  
             end if;
             
         when s_DONECHK =>
             if G_DONE48 = '1' then
-                r_SM_Main48 <= s_DOG; 
+                r_SM_Main48 <= s_IDLE; 
             end if;
         
         when s_DOG =>
             G_EN48 <= '1';
-            if G_DONE48 = '0' then
-                r_SM_Main48 <= s_IDLE;    
-            end if;
+            r_SM_Main48 <= s_DONECHK;
         
         when others =>
             r_SM_Main48 <= s_IDLE; 

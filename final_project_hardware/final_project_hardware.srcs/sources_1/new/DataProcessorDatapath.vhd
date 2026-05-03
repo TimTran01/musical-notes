@@ -83,10 +83,10 @@ constant total_sample : integer := 12;
 constant data_width : integer := 24;
 
 signal r_cnt3, r_cnt12, r_cnt48 : unsigned(total_sample - 1 downto 0) := (others => '0');
-signal r_data3, r_data12, r_data48 : signed(data_width - 1 downto 0) := (others => '0');
-signal r_data3_adj, r_data12_adj, r_data48_adj : std_logic_vector(data_width - 1 downto 0);
+signal r_data3, r_data12, r_data48 : signed((data_width * 2) - 1 downto 0) := (others => '0');
+signal r_data3_adj, r_data12_adj, r_data48_adj : std_logic_vector(data_width - 1 downto 0) := (others => '0');
 
-signal r_sample, r_sample3, r_sample12, r_sample48 : std_logic_vector(data_width - 1 downto 0);
+signal r_sample3, r_sample12, r_sample48 : std_logic_vector(data_width - 1 downto 0) := (others => '0');
 
 
 begin
@@ -104,10 +104,12 @@ clk12kHz <= clk12;
 clk48kHz <= clk48;
 
 
-p_count_3kHz: process(clk, f_en_cnt3)
+p_count_3kHz: process(clk)
 begin
     if rising_edge(clk) then
-        if f_en_cnt3 = '1' then
+        if rst = '1' then
+            r_cnt3 <= (others => '0');
+        elsif f_en_cnt3 = '1' then
             r_cnt3 <= r_cnt3 + 1;  -- increment counter
         end if;
     end if;
@@ -116,7 +118,9 @@ end process;
 p_regdata3: process(clk)
 begin
     if rising_edge(clk) then
-        if f_en_data3 = '1' then
+        if rst = '1' then
+            r_sample3 <= (others => '0');
+        elsif f_en_data3 = '1' then
             r_sample3 <= sample;
         end if;
     end if;
@@ -125,26 +129,33 @@ end process;
 p_conv3: process(clk)
 begin
     if rising_edge(clk) then
-        -- Stage 1: multiply
-        r_data3 <= signed(r_sample3) * signed(hann0);
+        if rst = '1' then
+            r_data3 <= (others => '0');
+            r_data3_adj <= (others => '0');
+        else
+            -- Stage 1: multiply
+            r_data3 <= signed(r_sample3) * signed(hann0);
 
-        -- Stage 2: scale previous result
-        r_data3_adj <= std_logic_vector(r_data3(47 downto 24));
+            -- Stage 2: scale previous result
+            r_data3_adj <= std_logic_vector(r_data3(47 downto 24));
+        end if;
     end if;
 end process;
 
 
-f_done_3 <= '1' when r_cnt3(6 downto 0) = "0000000" else '0';
+f_done_3 <= '1' when r_cnt3(6 downto 0) = "1111111" else '0';
 
 hann_addr0 <= std_logic_vector(r_cnt3);
 ram_addr3  <= std_logic_vector(r_cnt3);
 
 ram_data3 <= r_data3_adj;
 
-p_count_12kHz: process(clk, f_en_cnt12)
+p_count_12kHz: process(clk)
 begin
     if rising_edge(clk) then
-        if f_en_cnt12 = '1' then
+        if rst = '1' then
+            r_cnt12 <= (others => '0');
+        elsif f_en_cnt12 = '1' then
             r_cnt12 <= r_cnt12 + 1;  -- increment counter
         end if;
     end if;
@@ -153,7 +164,9 @@ end process;
 p_regdata12: process(clk)
 begin
     if rising_edge(clk) then
-        if f_en_data12 = '1' then
+        if rst = '1' then
+            r_sample12 <= (others => '0');
+        elsif f_en_data12 = '1' then
             r_sample12 <= sample;
         end if;
     end if;
@@ -162,26 +175,33 @@ end process;
 p_conv12: process(clk)
 begin
     if rising_edge(clk) then
-        -- Stage 1: multiply
-        r_data12 <= signed(r_sample12) * signed(hann0);
+        if rst = '1' then
+            r_data12 <= (others => '0');
+            r_data12_adj <= (others => '0');
+        else
+            -- Stage 1: multiply
+            r_data12 <= signed(r_sample12) * signed(hann1);
 
-        -- Stage 2: scale previous result
-        r_data12_adj <= std_logic_vector(r_data12(47 downto 24));
+            -- Stage 2: scale previous result
+            r_data12_adj <= std_logic_vector(r_data12(47 downto 24));
+        end if;
     end if;
 end process;
 
 
-f_done_12 <= '1' when r_cnt12(6 downto 0) = "0000000" else '0';
+f_done_12 <= '1' when r_cnt12(6 downto 0) = "1111111" else '0';
 
-hann_addr0 <= std_logic_vector(r_cnt12);
+hann_addr1 <= std_logic_vector(r_cnt12);
 ram_addr12  <= std_logic_vector(r_cnt12);
 
 ram_data12 <= r_data12_adj;
 
-p_count_48kHz: process(clk, f_en_cnt48)
+p_count_48kHz: process(clk)
 begin
     if rising_edge(clk) then
-        if f_en_cnt48 = '1' then
+        if rst = '1' then
+            r_cnt48 <= (others => '0');
+        elsif f_en_cnt48 = '1' then
             r_cnt48 <= r_cnt48 + 1;  -- increment counter
         end if;
     end if;
@@ -190,7 +210,9 @@ end process;
 p_regdata48: process(clk)
 begin
     if rising_edge(clk) then
-        if f_en_data48 = '1' then
+        if rst = '1' then
+            r_sample48 <= (others => '0');
+        elsif f_en_data48 = '1' then
             r_sample48 <= sample;
         end if;
     end if;
@@ -199,18 +221,23 @@ end process;
 p_conv48: process(clk)
 begin
     if rising_edge(clk) then
-        -- Stage 1: multiply
-        r_data48 <= signed(r_sample48) * signed(hann0);
+        if rst = '1' then
+            r_data48 <= (others => '0');
+            r_data48_adj <= (others => '0');
+        else
+            -- Stage 1: multiply
+            r_data48 <= signed(r_sample48) * signed(hann2);
 
-        -- Stage 2: scale previous result
-        r_data48_adj <= std_logic_vector(r_data48(47 downto 24));
+            -- Stage 2: scale previous result
+            r_data48_adj <= std_logic_vector(r_data48(47 downto 24));
+        end if;
     end if;
 end process;
 
 
-f_done_48 <= '1' when r_cnt48(6 downto 0) = "0000000" else '0';
+f_done_48 <= '1' when r_cnt48(6 downto 0) = "1111111" else '0';
 
-hann_addr0 <= std_logic_vector(r_cnt48);
+hann_addr2 <= std_logic_vector(r_cnt48);
 ram_addr48  <= std_logic_vector(r_cnt48);
 
 ram_data48 <= r_data48_adj;
