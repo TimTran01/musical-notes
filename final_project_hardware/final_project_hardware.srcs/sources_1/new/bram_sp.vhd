@@ -1,3 +1,17 @@
+----------------------------------------------------------------------------------
+-- Module Name: bram_sp
+--
+-- Description:
+--   Single-clock bank RAM used between the data preprocessor and Goertzel
+--   wrapper. The RAM has one write port and one registered read port with
+--   independent addresses. The block design instantiates three copies, one for
+--   each 3 kHz, 12 kHz, and 48 kHz sample bank.
+--
+-- Timing:
+--   Writes occur on the rising clock edge when we is high. dout reflects the
+--   word at r_addr after the next rising clock edge.
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;

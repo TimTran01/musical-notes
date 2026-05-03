@@ -1,21 +1,17 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 04/27/2026 09:55:00 PM
--- Design Name: 
--- Module Name: HannROM - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Module Name: HannROM
+--
+-- Description:
+--   Three-port synchronous Hann coefficient ROM for the preprocessing banks.
+--
+--   The full Hann window is 4096 samples, but the table is symmetric. To save
+--   ROM space this module stores only the first 2048 signed 24-bit coefficients.
+--   Addresses 0..2047 read directly from the stored table, while addresses
+--   2048..4095 mirror through 4095 - addr so the second half of the window
+--   reuses the first-half coefficients in reverse order.
+--
+--   The three address/data ports let the 3 kHz, 12 kHz, and 48 kHz banks fetch
+--   independent coefficients from the same ROM on the shared system clock.
 ----------------------------------------------------------------------------------
 
 

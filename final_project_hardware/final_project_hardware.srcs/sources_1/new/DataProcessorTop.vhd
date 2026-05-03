@@ -1,21 +1,15 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 05/02/2026 10:25:25 PM
--- Design Name: 
--- Module Name: DataProcessorTop - Structural
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Module Name: DataProcessorTop
+--
+-- Description:
+--   Structural wrapper for the block-design data preprocessor IP.
+--
+--   DataProcessorTop wires the shared controller and datapath together for the
+--   three analysis banks. The public block-design ports match the diagram:
+--   one ADC sample input, three Hann coefficient ports, three Hann address
+--   outputs, three bank-RAM write interfaces, and three Goertzel handshake
+--   pairs. The datapath owns address generation and Hann multiplication while
+--   the controller sequences RAM writes and Goertzel start/done handshakes.
 ----------------------------------------------------------------------------------
 
 

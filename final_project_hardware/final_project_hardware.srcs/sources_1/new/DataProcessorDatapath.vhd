@@ -1,21 +1,24 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 05/02/2026 03:07:35 PM
--- Design Name: 
--- Module Name: DataProcessorDatapath - arch
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Module Name: DataProcessorDatapath
+--
+-- Description:
+--   Datapath for the 3 kHz, 12 kHz, and 48 kHz preprocessing banks.
+--
+--   The datapath instantiates clk_divider, keeps an independent 12-bit sample
+--   address counter for each bank, captures the incoming 24-bit sample when the
+--   controller asserts f_en_data*, and multiplies that sample by the matching
+--   Hann coefficient. The upper 24 bits of the registered 48-bit product are
+--   written into the corresponding RAM bank.
+--
+-- Block timing:
+--   The low seven address bits define the 128-sample block consumed by the
+--   Goertzel engine. f_done_* asserts whenever those bits equal 127 so the
+--   controller can start the matching Goertzel bank after the final sample of a
+--   block has been written.
+--
+-- Reset behavior:
+--   rst clears the bank counters, captured samples, and multiply/scale pipeline
+--   registers.
 ----------------------------------------------------------------------------------
 
 

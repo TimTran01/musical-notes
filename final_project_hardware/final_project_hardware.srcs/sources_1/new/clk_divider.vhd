@@ -1,3 +1,15 @@
+----------------------------------------------------------------------------------
+-- Module Name: clk_divider
+--
+-- Description:
+--   Independent integer clock dividers for the three preprocessing banks.
+--
+--   The input clock is the 50 MHz block-design clock. Each output toggles after
+--   its own terminal count, giving the controller separate 3 kHz, 12 kHz, and
+--   48 kHz divided clocks for bank scheduling. The reset input is active high
+--   and asynchronous to match the existing controller/datapath reset style.
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -14,15 +26,16 @@ end clk_divider;
 
 architecture arch of clk_divider is
 
-    -- Counter to hold values up to 521 (9 bits is enough)
+    -- 48 kHz divider state. Toggling every 522 input clocks produces the
+    -- closest integer-divided square wave from the 50 MHz system clock.
     signal counter_48 : integer range 0 to 521 := 0;
     signal temporal_48: STD_LOGIC := '0';
     
-    -- Counter to hold values up to 521 (9 bits is enough)
+    -- 12 kHz divider state.
     signal counter_12 : integer range 0 to 2083 := 0;
     signal temporal_12: STD_LOGIC := '0';
     
-    -- Counter to hold values up to 521 (9 bits is enough)
+    -- 3 kHz divider state.
     signal counter_3 : integer range 0 to 8333 := 0;
     signal temporal_3: STD_LOGIC := '0';
     

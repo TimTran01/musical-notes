@@ -1,21 +1,21 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 05/02/2026 07:36:16 PM
--- Design Name: 
--- Module Name: DataProcessorController - arch
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Module Name: DataProcessorController
+--
+-- Description:
+--   Control state machines for the three preprocessing banks.
+--
+--   Each bank has an independent FSM driven by the 50 MHz system clock and
+--   gated by that bank's divided sample clock. The FSM captures a sample into
+--   the datapath, writes the Hann-windowed result into the matching bank RAM,
+--   and advances the bank address counter. When the datapath reports that the
+--   current 128-sample block is complete, the controller pulses the matching
+--   Goertzel enable and waits for that bank's G_DONE response before accepting
+--   the next block.
+--
+-- Reset behavior:
+--   rst is active high and returns all three FSMs to IDLE. Control outputs are
+--   driven low by default on each clocked cycle so write-enable and Goertzel
+--   start signals are single-cycle pulses.
 ----------------------------------------------------------------------------------
 
 
