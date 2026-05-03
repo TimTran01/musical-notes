@@ -1,7 +1,7 @@
 # Package adc_sample_48khz_sampler as a reusable Vivado custom IP.
 #
 # Run from the repository root with:
-#   vivado -mode batch -source tools/package_adc_sampler_ip.tcl
+#   vivado -mode batch -source tools/vivado_scripts/package_adc_sampler_ip.tcl
 #
 # Vivado block diagrams show packaged IP from IP repositories. Plain RTL files
 # in sources_1 can be added with "Add Module", but they do not automatically
