@@ -7,6 +7,7 @@ set project_path [file normalize "final_project_hardware/final_project_hardware.
 set bd_path      [file normalize "final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/design_1.bd"]
 set source_dir   [file normalize "final_project_hardware/final_project_hardware.srcs/sources_1/new"]
 set latch_file   [file normalize "$source_dir/note_event_latch.vhd"]
+set wrapper_file [file normalize "$source_dir/design_1_wrapper.vhd"]
 set adc_samples_file "adc_samples.mem"
 set bank1_coeff_file "goertzel_bank1_coeff.mem"
 set bank2_coeff_file "goertzel_bank2_coeff.mem"
@@ -140,12 +141,14 @@ assign_bd_address
 validate_bd_design
 save_bd_design
 generate_target all [get_files $bd_path] -force
-set wrapper_files [make_wrapper -files [get_files $bd_path] -top]
-foreach wrapper_file $wrapper_files {
-    if {[llength [get_files -quiet $wrapper_file]] == 0} {
-        add_files -norecurse $wrapper_file
-    }
+set generated_wrappers [make_wrapper -files [get_files $bd_path] -top]
+if {[llength $generated_wrappers] > 0} {
+    file copy -force [lindex $generated_wrappers 0] $wrapper_file
 }
+if {[llength [get_files -quiet $wrapper_file]] == 0} {
+    add_files -norecurse $wrapper_file
+}
+set_property file_type VHDL [get_files $wrapper_file]
 set_property top design_1_wrapper [get_filesets sources_1]
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1

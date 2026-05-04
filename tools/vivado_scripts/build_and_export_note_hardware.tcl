@@ -5,6 +5,7 @@
 
 set project_path [file normalize "final_project_hardware/final_project_hardware.xpr"]
 set bd_path      [file normalize "final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/design_1.bd"]
+set wrapper_file [file normalize "final_project_hardware/final_project_hardware.srcs/sources_1/new/design_1_wrapper.vhd"]
 set xsa_dir      [file normalize "final_project_software/hw"]
 set xsa_path     [file normalize "$xsa_dir/final_project_hardware.xsa"]
 
@@ -15,12 +16,14 @@ open_bd_design $bd_path
 
 validate_bd_design
 generate_target all [get_files $bd_path] -force
-set wrapper_files [make_wrapper -files [get_files $bd_path] -top]
-foreach wrapper_file $wrapper_files {
-    if {[llength [get_files -quiet $wrapper_file]] == 0} {
-        add_files -norecurse $wrapper_file
-    }
+set generated_wrappers [make_wrapper -files [get_files $bd_path] -top]
+if {[llength $generated_wrappers] > 0} {
+    file copy -force [lindex $generated_wrappers 0] $wrapper_file
 }
+if {[llength [get_files -quiet $wrapper_file]] == 0} {
+    add_files -norecurse $wrapper_file
+}
+set_property file_type VHDL [get_files $wrapper_file]
 set_property top design_1_wrapper [get_filesets sources_1]
 update_compile_order -fileset sources_1
 
