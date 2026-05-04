@@ -1,17 +1,41 @@
 #include "sleep.h"
 #include "xgpio.h"
 #include "xil_exception.h"
+#include "xil_io.h"
 #include "xil_printf.h"
 #include "xparameters.h"
 #include "xscugic.h"
 #include "xstatus.h"
+#include "xuartps_hw.h"
 
 #define NOTE_GPIO_STATUS_CHANNEL 1U
 #define NOTE_GPIO_CLEAR_CHANNEL  2U
-#define NOTE_PENDING_MASK        0x80U
+#define NOTE_CONTROL_CLEAR       0x1U
+#define NOTE_CONTROL_PAGE_SHIFT  1U
+#define NOTE_PENDING_MASK        0x80000000U
+#define NOTE_KEY_SHIFT           24U
+#define NOTE_KEY3_SHIFT          17U
+#define NOTE_KEY12_SHIFT         10U
+#define NOTE_KEY48_SHIFT         3U
+#define NOTE_SELECTED_BANK_SHIFT 1U
 #define NOTE_KEY_MASK            0x7FU
+#define NOTE_SELECTED_BANK_MASK  0x3U
+#define NOTE_POWER_EXP_MASK      0x7FU
+#define NOTE_POWER_MANT_MASK     0xFFU
 #define NOTE_QUEUE_LENGTH        16U
 #define NOTE_POLL_DELAY_US       10000U
+#define UART_COMMAND_LINE_LENGTH 64U
+#define SAMPLE_LINE_LENGTH       16U
+#define SAMPLE_BUFFER_WORDS      4096U
+#define SAMPLE_WORD_MASK         0x00FFFFFFU
+#define SAMPLE_PLAYER_CONTROL    0x0000U
+#define SAMPLE_PLAYER_STATUS     0x0004U
+#define SAMPLE_PLAYER_COUNT      0x0008U
+#define SAMPLE_PLAYER_DATA       0x1000U
+#define SAMPLE_CONTROL_ENABLE    0x00000001U
+#define SAMPLE_CONTROL_RESTART   0x00000002U
+#define UART_POLL_DELAY_US       100U
+#define UART_LINE_TIMEOUT_POLLS  30000U
 
 #if defined(SDT) && defined(XPAR_NOTE_AXI_GPIO_0_BASEADDR)
 #define NOTE_GPIO_DEVICE_ID XPAR_NOTE_AXI_GPIO_0_BASEADDR
@@ -54,15 +78,44 @@
 #error "Could not find PL note interrupt ID in xparameters.h"
 #endif
 
+#if defined(XPAR_AXI_ADC_SAMPLE_PLAYER_0_BASEADDR)
+#define SAMPLE_PLAYER_BASEADDR XPAR_AXI_ADC_SAMPLE_PLAYER_0_BASEADDR
+#elif defined(XPAR_AXI_ADC_SAMPLE_PLAYER_0_S_AXI_BASEADDR)
+#define SAMPLE_PLAYER_BASEADDR XPAR_AXI_ADC_SAMPLE_PLAYER_0_S_AXI_BASEADDR
+#elif defined(XPAR_AXI_ADC_SAMPLE_PLAYER_BASEADDR)
+#define SAMPLE_PLAYER_BASEADDR XPAR_AXI_ADC_SAMPLE_PLAYER_BASEADDR
+#else
+/* connect_note_uart_bd.tcl fixes this address for the custom sample player. */
+#define SAMPLE_PLAYER_BASEADDR 0x43C00000U
+#endif
+
 static XGpio NoteGpio;
 static XScuGic InterruptController;
 
-static volatile u8 NoteQueue[NOTE_QUEUE_LENGTH];
+typedef struct {
+    u8 key;
+    u8 key3;
+    u8 key12;
+    u8 key48;
+    u8 selected_bank;
+    u8 power3_exp;
+    u8 power3_mant;
+    u8 power12_exp;
+    u8 power12_mant;
+    u8 power48_exp;
+    u8 power48_mant;
+} NoteEvent;
+
+static volatile NoteEvent NoteQueue[NOTE_QUEUE_LENGTH];
 static volatile u8 QueueHead = 0U;
 static volatile u8 QueueTail = 0U;
 static volatile u32 DroppedEvents = 0U;
+static volatile u8 NoteOutputArmed = 0U;
+static u32 NoteControlValue = 0U;
 
 static u8 LastLevelKey = 0U;
+static char CommandLine[UART_COMMAND_LINE_LENGTH];
+static u32 CommandLength = 0U;
 
 static const char *const NoteNames[89] = {
     "", "A0", "A#0", "B0", "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1",
@@ -91,11 +144,46 @@ static const u32 NoteFreqCentiHz[89] = {
 
 static void PulseNoteClear(void)
 {
-    XGpio_DiscreteWrite(&NoteGpio, NOTE_GPIO_CLEAR_CHANNEL, 1U);
-    XGpio_DiscreteWrite(&NoteGpio, NOTE_GPIO_CLEAR_CHANNEL, 0U);
+    XGpio_DiscreteWrite(&NoteGpio, NOTE_GPIO_CLEAR_CHANNEL, NoteControlValue | NOTE_CONTROL_CLEAR);
+    XGpio_DiscreteWrite(&NoteGpio, NOTE_GPIO_CLEAR_CHANNEL, NoteControlValue);
 }
 
-static void QueueNoteKey(u8 key)
+static void SelectDebugPage(u8 page)
+{
+    NoteControlValue = ((u32)(page & 0x3U) << NOTE_CONTROL_PAGE_SHIFT);
+    XGpio_DiscreteWrite(&NoteGpio, NOTE_GPIO_CLEAR_CHANNEL, NoteControlValue);
+}
+
+static NoteEvent DecodeNoteStatus(u32 status)
+{
+    NoteEvent event;
+
+    event.key = (u8)((status >> NOTE_KEY_SHIFT) & NOTE_KEY_MASK);
+    event.key3 = (u8)((status >> NOTE_KEY3_SHIFT) & NOTE_KEY_MASK);
+    event.key12 = (u8)((status >> NOTE_KEY12_SHIFT) & NOTE_KEY_MASK);
+    event.key48 = (u8)((status >> NOTE_KEY48_SHIFT) & NOTE_KEY_MASK);
+    event.selected_bank = (u8)((status >> NOTE_SELECTED_BANK_SHIFT) & NOTE_SELECTED_BANK_MASK);
+    event.power3_exp = 0U;
+    event.power3_mant = 0U;
+    event.power12_exp = 0U;
+    event.power12_mant = 0U;
+    event.power48_exp = 0U;
+    event.power48_mant = 0U;
+
+    return event;
+}
+
+static void DecodePowerStatus(NoteEvent *event, u32 page1_status, u32 page2_status)
+{
+    event->power3_exp = (u8)((page1_status >> 24U) & NOTE_POWER_EXP_MASK);
+    event->power3_mant = (u8)((page1_status >> 16U) & NOTE_POWER_MANT_MASK);
+    event->power12_exp = (u8)((page1_status >> 9U) & NOTE_POWER_EXP_MASK);
+    event->power12_mant = (u8)((page1_status >> 1U) & NOTE_POWER_MANT_MASK);
+    event->power48_exp = (u8)((page2_status >> 24U) & NOTE_POWER_EXP_MASK);
+    event->power48_mant = (u8)((page2_status >> 16U) & NOTE_POWER_MANT_MASK);
+}
+
+static void QueueNoteEvent(NoteEvent event)
 {
     u8 next_head = (u8)((QueueHead + 1U) % NOTE_QUEUE_LENGTH);
 
@@ -104,33 +192,61 @@ static void QueueNoteKey(u8 key)
         return;
     }
 
-    NoteQueue[QueueHead] = key;
+    NoteQueue[QueueHead] = event;
     QueueHead = next_head;
 }
 
-static int DequeueNoteKey(u8 *key)
+static int DequeueNoteEvent(NoteEvent *event)
 {
     if (QueueTail == QueueHead) {
         return 0;
     }
 
-    *key = NoteQueue[QueueTail];
+    *event = NoteQueue[QueueTail];
     QueueTail = (u8)((QueueTail + 1U) % NOTE_QUEUE_LENGTH);
     return 1;
 }
 
+static void ClearNoteQueue(void)
+{
+    QueueHead = 0U;
+    QueueTail = 0U;
+}
+
+static void DisarmNoteOutput(void)
+{
+    NoteOutputArmed = 0U;
+}
+
+static void ArmSingleNoteOutput(void)
+{
+    NoteOutputArmed = 1U;
+}
+
 static int CapturePendingNote(XGpio *gpio)
 {
-    u32 status = XGpio_DiscreteRead(gpio, NOTE_GPIO_STATUS_CHANNEL);
-    u8 key = (u8)(status & NOTE_KEY_MASK);
+    u32 status;
+    u32 power_page1;
+    u32 power_page2;
+    SelectDebugPage(0U);
+    status = XGpio_DiscreteRead(gpio, NOTE_GPIO_STATUS_CHANNEL);
+    NoteEvent event = DecodeNoteStatus(status);
 
     if ((status & NOTE_PENDING_MASK) == 0U) {
         return 0;
     }
 
-    if ((key >= 1U) && (key <= 88U)) {
-        QueueNoteKey(key);
-        LastLevelKey = key;
+    SelectDebugPage(1U);
+    power_page1 = XGpio_DiscreteRead(gpio, NOTE_GPIO_STATUS_CHANNEL);
+    SelectDebugPage(2U);
+    power_page2 = XGpio_DiscreteRead(gpio, NOTE_GPIO_STATUS_CHANNEL);
+    SelectDebugPage(0U);
+    DecodePowerStatus(&event, power_page1, power_page2);
+
+    if ((NoteOutputArmed != 0U) && (event.key >= 1U) && (event.key <= 88U)) {
+        QueueNoteEvent(event);
+        LastLevelKey = event.key;
+        DisarmNoteOutput();
     }
 
     PulseNoteClear();
@@ -147,25 +263,6 @@ static void PollNoteLatch(void)
     (void)CapturePendingNote(&NoteGpio);
 }
 
-static void PollKeyLevelFallback(void)
-{
-    u32 status = XGpio_DiscreteRead(&NoteGpio, NOTE_GPIO_STATUS_CHANNEL);
-    u8 key = (u8)(status & NOTE_KEY_MASK);
-
-    if ((status & NOTE_PENDING_MASK) != 0U) {
-        return;
-    }
-
-    if ((key < 1U) || (key > 88U)) {
-        return;
-    }
-
-    if (key != LastLevelKey) {
-        QueueNoteKey(key);
-        LastLevelKey = key;
-    }
-}
-
 static int SetupGpio(void)
 {
     int status = XGpio_Initialize(&NoteGpio, NOTE_GPIO_DEVICE_ID);
@@ -173,8 +270,9 @@ static int SetupGpio(void)
         return status;
     }
 
-    XGpio_SetDataDirection(&NoteGpio, NOTE_GPIO_STATUS_CHANNEL, 0xFFU);
+    XGpio_SetDataDirection(&NoteGpio, NOTE_GPIO_STATUS_CHANNEL, 0xFFFFFFFFU);
     XGpio_SetDataDirection(&NoteGpio, NOTE_GPIO_CLEAR_CHANNEL, 0x00U);
+    SelectDebugPage(0U);
     PulseNoteClear();
     return XST_SUCCESS;
 }
@@ -219,6 +317,268 @@ static int SetupInterrupts(void)
     return XST_SUCCESS;
 }
 
+static void SamplePlayerDisable(void)
+{
+    Xil_Out32(SAMPLE_PLAYER_BASEADDR + SAMPLE_PLAYER_CONTROL, 0U);
+}
+
+static void SamplePlayerRestartAndEnable(void)
+{
+    Xil_Out32(SAMPLE_PLAYER_BASEADDR + SAMPLE_PLAYER_CONTROL, SAMPLE_CONTROL_RESTART);
+    usleep(1000U);
+    Xil_Out32(SAMPLE_PLAYER_BASEADDR + SAMPLE_PLAYER_CONTROL, SAMPLE_CONTROL_ENABLE);
+}
+
+static int SetupSamplePlayer(void)
+{
+    SamplePlayerDisable();
+    Xil_Out32(SAMPLE_PLAYER_BASEADDR + SAMPLE_PLAYER_CONTROL, SAMPLE_CONTROL_RESTART);
+    usleep(1000U);
+    SamplePlayerDisable();
+
+    if (Xil_In32(SAMPLE_PLAYER_BASEADDR + SAMPLE_PLAYER_COUNT) != SAMPLE_BUFFER_WORDS) {
+        return XST_FAILURE;
+    }
+
+    return XST_SUCCESS;
+}
+
+static int HexValue(char c, u32 *value)
+{
+    if ((c >= '0') && (c <= '9')) {
+        *value = (u32)(c - '0');
+        return 1;
+    }
+    if ((c >= 'A') && (c <= 'F')) {
+        *value = (u32)(c - 'A' + 10);
+        return 1;
+    }
+    if ((c >= 'a') && (c <= 'f')) {
+        *value = (u32)(c - 'a' + 10);
+        return 1;
+    }
+    return 0;
+}
+
+static int ParseHexDigits(const char **cursor, u32 digits, u32 *value)
+{
+    u32 parsed = 0U;
+    u32 nibble;
+    const char *text = *cursor;
+
+    for (u32 index = 0U; index < digits; index++) {
+        if (HexValue(text[index], &nibble) == 0) {
+            return 0;
+        }
+        parsed = (parsed << 4) | nibble;
+    }
+
+    *cursor = text + digits;
+    *value = parsed;
+    return 1;
+}
+
+static int ParseDecimal(const char **cursor, u32 *value)
+{
+    u32 parsed = 0U;
+    u32 digit_count = 0U;
+    const char *text = *cursor;
+
+    while ((*text >= '0') && (*text <= '9')) {
+        parsed = (parsed * 10U) + (u32)(*text - '0');
+        text++;
+        digit_count++;
+    }
+
+    if (digit_count == 0U) {
+        return 0;
+    }
+
+    *cursor = text;
+    *value = parsed;
+    return 1;
+}
+
+static int ParseLoadCommand(const char *line, u32 *sample_count, u32 *expected_checksum)
+{
+    const char *cursor = line;
+
+    if ((cursor[0] != 'L') || (cursor[1] != 'O') || (cursor[2] != 'A') ||
+        (cursor[3] != 'D') || (cursor[4] != ',')) {
+        return 0;
+    }
+    cursor += 5;
+
+    if (ParseDecimal(&cursor, sample_count) == 0) {
+        return 0;
+    }
+    if (*cursor != ',') {
+        return 0;
+    }
+    cursor++;
+
+    if (ParseHexDigits(&cursor, 8U, expected_checksum) == 0) {
+        return 0;
+    }
+
+    return *cursor == '\0';
+}
+
+static int ParseSampleWord(const char *line, u32 *sample_word)
+{
+    const char *cursor = line;
+
+    if (ParseHexDigits(&cursor, 6U, sample_word) == 0) {
+        return 0;
+    }
+
+    if (*cursor != '\0') {
+        return 0;
+    }
+
+    *sample_word &= SAMPLE_WORD_MASK;
+    return 1;
+}
+
+static int ReadUartLineBlocking(char *line, u32 line_capacity)
+{
+    u32 length = 0U;
+    u32 idle_polls = 0U;
+    u8 byte;
+
+    while (idle_polls < UART_LINE_TIMEOUT_POLLS) {
+        if (XUartPs_IsReceiveData(STDIN_BASEADDRESS) != 0U) {
+            byte = XUartPs_RecvByte(STDIN_BASEADDRESS);
+            idle_polls = 0U;
+
+            if (byte == '\r') {
+                continue;
+            }
+
+            if (byte == '\n') {
+                line[length] = '\0';
+                return 1;
+            }
+
+            if (length + 1U >= line_capacity) {
+                return 0;
+            }
+
+            line[length] = (char)byte;
+            length++;
+        } else {
+            idle_polls++;
+            usleep(UART_POLL_DELAY_US);
+        }
+    }
+
+    return 0;
+}
+
+static void LoadSamplesFromUart(u32 sample_count, u32 expected_checksum)
+{
+    char sample_line[SAMPLE_LINE_LENGTH];
+    u32 checksum = 0U;
+    u32 sample_word;
+
+    if (sample_count != SAMPLE_BUFFER_WORDS) {
+        xil_printf("ERROR,load,count\r\n");
+        return;
+    }
+
+    SamplePlayerDisable();
+    PulseNoteClear();
+    ClearNoteQueue();
+    DisarmNoteOutput();
+    LastLevelKey = 0U;
+
+    for (u32 index = 0U; index < SAMPLE_BUFFER_WORDS; index++) {
+        if (ReadUartLineBlocking(sample_line, SAMPLE_LINE_LENGTH) == 0) {
+            xil_printf("ERROR,load,timeout,%lu\r\n", (unsigned long)index);
+            SamplePlayerDisable();
+            PulseNoteClear();
+            ClearNoteQueue();
+            DisarmNoteOutput();
+            return;
+        }
+
+        if (ParseSampleWord(sample_line, &sample_word) == 0) {
+            xil_printf("ERROR,load,bad_sample,%lu,%s\r\n", (unsigned long)index, sample_line);
+            SamplePlayerDisable();
+            PulseNoteClear();
+            ClearNoteQueue();
+            DisarmNoteOutput();
+            return;
+        }
+
+        Xil_Out32(
+            SAMPLE_PLAYER_BASEADDR + SAMPLE_PLAYER_DATA + (index * sizeof(u32)),
+            sample_word
+        );
+        checksum += sample_word;
+    }
+
+    if (checksum != expected_checksum) {
+        xil_printf(
+            "ERROR,load,checksum,%08lx,%08lx\r\n",
+            (unsigned long)checksum,
+            (unsigned long)expected_checksum
+        );
+        SamplePlayerDisable();
+        PulseNoteClear();
+        ClearNoteQueue();
+        DisarmNoteOutput();
+        return;
+    }
+
+    PulseNoteClear();
+    ClearNoteQueue();
+    ArmSingleNoteOutput();
+    SamplePlayerRestartAndEnable();
+    xil_printf("LOADED,%lu,%08lx\r\n", (unsigned long)SAMPLE_BUFFER_WORDS, (unsigned long)checksum);
+}
+
+static void ProcessUartCommand(const char *line)
+{
+    u32 sample_count;
+    u32 expected_checksum;
+
+    if (ParseLoadCommand(line, &sample_count, &expected_checksum) != 0) {
+        LoadSamplesFromUart(sample_count, expected_checksum);
+    }
+}
+
+static void PollUartCommands(void)
+{
+    u8 byte;
+
+    while (XUartPs_IsReceiveData(STDIN_BASEADDRESS) != 0U) {
+        byte = XUartPs_RecvByte(STDIN_BASEADDRESS);
+
+        if (byte == '\r') {
+            continue;
+        }
+
+        if (byte == '\n') {
+            CommandLine[CommandLength] = '\0';
+            if (CommandLength > 0U) {
+                ProcessUartCommand(CommandLine);
+            }
+            CommandLength = 0U;
+            return;
+        }
+
+        if (CommandLength + 1U >= UART_COMMAND_LINE_LENGTH) {
+            CommandLength = 0U;
+            xil_printf("ERROR,command,line_too_long\r\n");
+            return;
+        }
+
+        CommandLine[CommandLength] = (char)byte;
+        CommandLength++;
+    }
+}
+
 static void PrintNoteCsv(u8 key)
 {
     u32 freq = NoteFreqCentiHz[key];
@@ -231,10 +591,42 @@ static void PrintNoteCsv(u8 key)
     );
 }
 
+static const char *SelectedBankName(u8 selected_bank)
+{
+    switch (selected_bank) {
+    case 0U:
+        return "3k";
+    case 1U:
+        return "12k";
+    case 2U:
+        return "48k";
+    default:
+        return "unknown";
+    }
+}
+
+static void PrintNoteDebug(NoteEvent event)
+{
+    xil_printf(
+        "DEBUG,final=%u,bank3k=%u,bank12k=%u,bank48k=%u,selected=%s,p3=%u:%02x,p12=%u:%02x,p48=%u:%02x\r\n",
+        event.key,
+        event.key3,
+        event.key12,
+        event.key48,
+        SelectedBankName(event.selected_bank),
+        event.power3_exp,
+        event.power3_mant,
+        event.power12_exp,
+        event.power12_mant,
+        event.power48_exp,
+        event.power48_mant
+    );
+}
+
 int main(void)
 {
     int status;
-    u8 key;
+    NoteEvent event;
 
     status = SetupGpio();
     if (status != XST_SUCCESS) {
@@ -248,18 +640,26 @@ int main(void)
         return XST_FAILURE;
     }
 
+    status = SetupSamplePlayer();
+    if (status != XST_SUCCESS) {
+        xil_printf("ERROR,sample_player_init,%d\r\n", status);
+        return XST_FAILURE;
+    }
+
     xil_printf(
-        "READY,note_uart_app,115200,gpio=0x%08lx,irq=%lu\r\n",
+        "READY,note_uart_app,115200,gpio=0x%08lx,irq=%lu,sample=0x%08lx\r\n",
         (unsigned long)NOTE_GPIO_DEVICE_ID,
-        (unsigned long)NOTE_IRQ_ID
+        (unsigned long)NOTE_IRQ_ID,
+        (unsigned long)SAMPLE_PLAYER_BASEADDR
     );
 
     while (1) {
+        PollUartCommands();
         PollNoteLatch();
-        PollKeyLevelFallback();
 
-        while (DequeueNoteKey(&key) != 0) {
-            PrintNoteCsv(key);
+        while (DequeueNoteEvent(&event) != 0) {
+            PrintNoteDebug(event);
+            PrintNoteCsv(event.key);
         }
 
         usleep(NOTE_POLL_DELAY_US);

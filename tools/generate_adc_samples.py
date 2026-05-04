@@ -5,10 +5,10 @@ The VHDL ROM expects a plain text file named adc_samples.mem by default. This
 script creates that file with exactly 4096 hexadecimal words, one word per line.
 Each word is a 24-bit two's-complement ADC sample with no "0x" prefix.
 
-The generated waveform is a simple piano-like note model:
+The generated waveform is a detector-friendly piano-like note model:
   - a fundamental sine wave at the selected piano-key frequency,
-  - a few weaker harmonics to make the tone less ideal,
-  - a short attack and exponential decay envelope,
+  - weak upper harmonics with random phase to make the tone less ideal,
+  - a short attack and slow decay with a sustain floor,
   - small random noise to imitate analog/ADC variation.
 
 The output is intended for early FPGA testing before the real ADC path is added.
@@ -29,8 +29,9 @@ ADC_MIN_SIGNED = -(1 << (ADC_BITS - 1))
 DEFAULT_SAMPLE_COUNT = 4096
 DEFAULT_SAMPLE_RATE_HZ = 48_000.0
 DEFAULT_FREQUENCY_HZ = 440.0
-DEFAULT_AMPLITUDE = 0.75
-DEFAULT_NOISE = 0.002
+DEFAULT_AMPLITUDE = 0.95
+DEFAULT_NOISE = 0.0008
+DEFAULT_HARMONIC_WEIGHTS = (1.0, 0.06, 0.02, 0.01)
 DEFAULT_OUTPUT = (
     Path(__file__).resolve().parents[1]
     / "final_project_hardware"
@@ -56,13 +57,15 @@ def envelope(sample_index: int, sample_rate_hz: float, sample_count: int) -> flo
     time_s = sample_index / sample_rate_hz
     duration_s = sample_count / sample_rate_hz
 
-    attack_s = 0.006
+    attack_s = 0.004
     attack_gain = min(1.0, time_s / attack_s)
 
-    # Faster decay makes the sample set visibly change over the captured window
-    # while still leaving enough signal energy for Goertzel testing later.
-    decay_rate = 3.5 / max(duration_s, 1.0 / sample_rate_hz)
-    decay_gain = math.exp(-decay_rate * time_s)
+    # The hardware detector sees 256-sample windows from different rate banks.
+    # Keep enough signal energy through the whole 4096-sample capture so the
+    # final bank comparison is still dominated by the fundamental.
+    decay_floor = 0.86
+    decay_rate = 0.5 / max(duration_s, 1.0 / sample_rate_hz)
+    decay_gain = decay_floor + ((1.0 - decay_floor) * math.exp(-decay_rate * time_s))
 
     return attack_gain * decay_gain
 
@@ -75,21 +78,23 @@ def piano_like_sample(
     noise_level: float,
     rng: random.Random,
     sample_count: int,
+    harmonic_phases: tuple[float, ...],
 ) -> int:
     """Generate one signed 24-bit ADC sample."""
     time_s = sample_index / sample_rate_hz
     phase = 2.0 * math.pi * frequency_hz * time_s
 
-    waveform = (
-        1.00 * math.sin(phase)
-        + 0.35 * math.sin(2.0 * phase)
-        + 0.18 * math.sin(3.0 * phase)
-        + 0.08 * math.sin(4.0 * phase)
-    )
+    waveform = 0.0
+    for harmonic_index, weight in enumerate(DEFAULT_HARMONIC_WEIGHTS, start=1):
+        waveform += weight * math.sin((harmonic_index * phase) + harmonic_phases[harmonic_index - 1])
 
-    # Sum of harmonic weights above is 1.61, so divide by that to keep the
-    # composite tone near +/-1.0 before applying amplitude and envelope.
-    waveform /= 1.61
+    # Normalize by the maximum possible absolute harmonic sum so the composite
+    # stays inside the ADC range regardless of random harmonic phase.
+    waveform /= sum(abs(weight) for weight in DEFAULT_HARMONIC_WEIGHTS)
+
+    # Small low-rate amplitude motion imitates capture variation without moving
+    # enough energy away from the generated note's fundamental bin.
+    waveform *= 1.0 + (0.006 * math.sin((2.0 * math.pi * 7.0 * time_s) + harmonic_phases[0]))
 
     analog_value = amplitude * envelope(sample_index, sample_rate_hz, sample_count) * waveform
     analog_value += rng.uniform(-noise_level, noise_level)
@@ -108,6 +113,7 @@ def generate_samples(
 ) -> list[int]:
     """Generate a complete ADC capture as signed 24-bit integers."""
     rng = random.Random(seed)
+    harmonic_phases = tuple(rng.uniform(-math.pi, math.pi) for _ in DEFAULT_HARMONIC_WEIGHTS)
     return [
         piano_like_sample(
             sample_index=index,
@@ -117,6 +123,7 @@ def generate_samples(
             noise_level=noise_level,
             rng=rng,
             sample_count=sample_count,
+            harmonic_phases=harmonic_phases,
         )
         for index in range(sample_count)
     ]
@@ -162,13 +169,13 @@ def parse_args() -> argparse.Namespace:
         "--amplitude",
         type=float,
         default=DEFAULT_AMPLITUDE,
-        help="normalized signal amplitude from 0.0 to 1.0 (default: 0.75)",
+        help="normalized signal amplitude from 0.0 to 1.0 (default: 0.95)",
     )
     parser.add_argument(
         "--noise",
         type=float,
         default=DEFAULT_NOISE,
-        help="uniform random noise level from 0.0 to 1.0 full scale (default: 0.002)",
+        help="uniform random noise level from 0.0 to 1.0 full scale (default: 0.0008)",
     )
     parser.add_argument(
         "--seed",

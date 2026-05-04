@@ -3,8 +3,8 @@
   "type": "PLATFORM",
   "configuration": {
     "description": "",
-    "xsa": "C:\\Users\\Tim\\Documents\\ECE_615\\final_project\\final_project_hardware\\piano_detect_hardware.xsa",
-    "xsaPathInPlatform": "piano_detect_platform\\hw\\piano_detect_hardware.xsa",
+    "xsa": "C:\\Users\\Tim\\Documents\\ECE_615\\final_project\\final_project_hardware\\finalXSA_hardware.xsa",
+    "xsaPathInPlatform": "piano_detect_platform\\hw\\finalXSA_hardware.xsa",
     "emulationXsa": "",
     "emulationXsaPathInPlatform": "",
     "isCustomFSBL": false,
