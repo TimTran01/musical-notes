@@ -8,10 +8,10 @@ set bd_path      [file normalize "final_project_hardware/final_project_hardware.
 set source_dir   [file normalize "final_project_hardware/final_project_hardware.srcs/sources_1/new"]
 set latch_file   [file normalize "$source_dir/note_event_latch.vhd"]
 set wrapper_file [file normalize "$source_dir/design_1_wrapper.vhd"]
-set adc_samples_file "adc_samples.mem"
-set bank1_coeff_file "goertzel_bank1_coeff.mem"
-set bank2_coeff_file "goertzel_bank2_coeff.mem"
-set bank3_coeff_file "goertzel_bank3_coeff.mem"
+set adc_samples_file [file normalize "$source_dir/adc_samples.mem"]
+set bank1_coeff_file [file normalize "$source_dir/goertzel_bank1_coeff.mem"]
+set bank2_coeff_file [file normalize "$source_dir/goertzel_bank2_coeff.mem"]
+set bank3_coeff_file [file normalize "$source_dir/goertzel_bank3_coeff.mem"]
 
 open_project $project_path
 

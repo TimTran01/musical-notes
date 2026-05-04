@@ -36,8 +36,8 @@ class BankConfig:
 
 BANKS = (
     BankConfig(bank_id=1, first_key=1, last_key=24, sample_rate_hz=3000.0),
-    BankConfig(bank_id=2, first_key=25, last_key=48, sample_rate_hz=12000.0),
-    BankConfig(bank_id=3, first_key=49, last_key=88, sample_rate_hz=48000.0),
+    BankConfig(bank_id=2, first_key=25, last_key=52, sample_rate_hz=12000.0),
+    BankConfig(bank_id=3, first_key=53, last_key=88, sample_rate_hz=48000.0),
 )
 
 

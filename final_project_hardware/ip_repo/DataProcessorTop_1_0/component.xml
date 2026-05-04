@@ -58,7 +58,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>98f2b7a3</spirit:value>
+            <spirit:value>d88c1edd</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -74,7 +74,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>98f2b7a3</spirit:value>
+            <spirit:value>d88c1edd</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -481,7 +481,7 @@
       <spirit:file>
         <spirit:name>src/DataProcessorTop.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_0c14f714</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_3ac78466</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -518,7 +518,7 @@
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
-  <spirit:description>New data processor top with controller, datapath, and per-bank clock divider counters.</spirit:description>
+  <spirit:description>Three-bank data preprocessor with per-bank clock dividers, Hann address generation, RAM write controls, and Goertzel handshakes.</spirit:description>
   <spirit:parameters>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
@@ -545,12 +545,12 @@
       <xilinx:vendorDisplayName>ECE 615</xilinx:vendorDisplayName>
       <xilinx:vendorURL>https://example.local/ece615</xilinx:vendorURL>
       <xilinx:coreRevision>1</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-05-03T05:37:09Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-04T02:46:28Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2023.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="25031715"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ad6bc75a"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="20f1607b"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="5c610205"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="f47e5e6a"/>
     </xilinx:packagingInfo>

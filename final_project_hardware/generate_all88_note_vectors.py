@@ -39,7 +39,7 @@ def key_frequency(key: int) -> float:
 def bank_for_key(key: int) -> int:
     if key <= 24:
         return 3
-    if key <= 48:
+    if key <= 52:
         return 12
     return 48
 

@@ -36,7 +36,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>24376017</spirit:value>
+            <spirit:value>a4866ae5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -52,7 +52,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>24376017</spirit:value>
+            <spirit:value>a4866ae5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -195,7 +195,7 @@
       <spirit:file>
         <spirit:name>src/HannROM.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_24376017</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_a4866ae5</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -217,7 +217,7 @@
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
-  <spirit:description>New 24-bit three-read-port Hann window ROM.</spirit:description>
+  <spirit:description>Three-port synchronous Hann coefficient ROM for the 3 kHz, 12 kHz, and 48 kHz preprocessing banks.</spirit:description>
   <spirit:parameters>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
@@ -239,17 +239,17 @@
       <xilinx:taxonomies>
         <xilinx:taxonomy>/UserIP</xilinx:taxonomy>
       </xilinx:taxonomies>
-      <xilinx:displayName>Hann ROM</xilinx:displayName>
+      <xilinx:displayName>HannROM</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:vendorDisplayName>ECE 615</xilinx:vendorDisplayName>
       <xilinx:vendorURL>https://example.local/ece615</xilinx:vendorURL>
       <xilinx:coreRevision>1</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2026-05-03T05:37:10Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2026-05-04T02:46:30Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2023.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="a88d4390"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a9044eb5"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="5dd2e6b7"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="91bd7cad"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="0acd8b4c"/>
     </xilinx:packagingInfo>

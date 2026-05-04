@@ -52,3 +52,4 @@ proc update_MODELPARAM_VALUE.BANK3_COEFF_FILE { MODELPARAM_VALUE.BANK3_COEFF_FIL
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.BANK3_COEFF_FILE}] ${MODELPARAM_VALUE.BANK3_COEFF_FILE}
 }
+

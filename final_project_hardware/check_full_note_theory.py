@@ -22,8 +22,8 @@ BLOCK_SIZE = 128
 
 BANKS = {
     3: ("goertzel_bank1_coeff.mem", 24, 1),
-    12: ("goertzel_bank2_coeff.mem", 24, 25),
-    48: ("goertzel_bank3_coeff.mem", 40, 49),
+    12: ("goertzel_bank2_coeff.mem", 28, 25),
+    48: ("goertzel_bank3_coeff.mem", 36, 53),
 }
 
 

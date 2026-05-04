@@ -1975,7 +1975,7 @@
         "inst_hier_path": "adc_sample_48khz_sam_0",
         "parameters": {
           "MEM_FILE": {
-            "value": "adc_samples.mem"
+            "value": "C:/Users/Tim/Documents/ECE_615/final_project/final_project_hardware/final_project_hardware.srcs/sources_1/new/adc_samples.mem"
           }
         }
       },
@@ -2009,13 +2009,13 @@
         "inst_hier_path": "goertzel_engines_3bank_0",
         "parameters": {
           "BANK1_COEFF_FILE": {
-            "value": "goertzel_bank1_coeff.mem"
+            "value": "C:/Users/Tim/Documents/ECE_615/final_project/final_project_hardware/final_project_hardware.srcs/sources_1/new/goertzel_bank1_coeff.mem"
           },
           "BANK2_COEFF_FILE": {
-            "value": "goertzel_bank2_coeff.mem"
+            "value": "C:/Users/Tim/Documents/ECE_615/final_project/final_project_hardware/final_project_hardware.srcs/sources_1/new/goertzel_bank2_coeff.mem"
           },
           "BANK3_COEFF_FILE": {
-            "value": "goertzel_bank3_coeff.mem"
+            "value": "C:/Users/Tim/Documents/ECE_615/final_project/final_project_hardware/final_project_hardware.srcs/sources_1/new/goertzel_bank3_coeff.mem"
           }
         }
       },
@@ -2632,18 +2632,18 @@
           "rst_ps7_0_50M/slowest_sync_clk",
           "processing_system7_0/M_AXI_GP0_ACLK",
           "note_debug_ila_0/clk",
-          "DataProcessorTop_0/clk",
           "HannROM_0/clk",
-          "adc_sample_48khz_sam_0/clk",
           "bram_sp_0/clk",
           "bram_sp_1/clk",
           "bram_sp_2/clk",
-          "goertzel_engines_3bank_0/sys_clk",
           "note_event_latch_0/clk",
           "note_axi_gpio_0/s_axi_aclk",
           "ps7_0_axi_periph/ACLK",
           "ps7_0_axi_periph/S00_ACLK",
-          "ps7_0_axi_periph/M00_ACLK"
+          "ps7_0_axi_periph/M00_ACLK",
+          "DataProcessorTop_0/clk",
+          "adc_sample_48khz_sam_0/clk",
+          "goertzel_engines_3bank_0/sys_clk"
         ]
       },
       "processing_system7_0_FCLK_RESET0_N": {
@@ -2664,10 +2664,10 @@
       "rst_ps7_0_50M_peripheral_reset": {
         "ports": [
           "rst_ps7_0_50M/peripheral_reset",
+          "note_event_latch_0/rst",
           "DataProcessorTop_0/rst",
           "adc_sample_48khz_sam_0/rst",
-          "goertzel_engines_3bank_0/sys_rst",
-          "note_event_latch_0/rst"
+          "goertzel_engines_3bank_0/sys_rst"
         ]
       },
       "xlconstant_enable_1_dout": {
