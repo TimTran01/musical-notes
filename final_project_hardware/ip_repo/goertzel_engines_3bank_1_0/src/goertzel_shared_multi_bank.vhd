@@ -70,8 +70,8 @@ architecture rtl of goertzel_shared_multi_bank is
     constant POWER_WIDTH     : natural := 112;
 
     constant BANK1_BIN_COUNT : natural := 24;
-    constant BANK2_BIN_COUNT : natural := 24;
-    constant BANK3_BIN_COUNT : natural := 40;
+    constant BANK2_BIN_COUNT : natural := 28;
+    constant BANK3_BIN_COUNT : natural := 36;
     constant MAX_BIN_COUNT   : natural := 40;
 
     constant BANK_SEL_3KHZ   : unsigned(1 downto 0) := to_unsigned(0, 2);

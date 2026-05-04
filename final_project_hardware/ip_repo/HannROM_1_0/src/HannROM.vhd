@@ -28,16 +28,16 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity HannROM is
-    Port (
+    Port ( 
     clk     :   in std_logic;
     addr0   :   in std_logic_vector(11 downto 0);
     addr1   :   in std_logic_vector(11 downto 0);
     addr2   :   in std_logic_vector(11 downto 0);
-
+    
     data0    :   out std_logic_vector(23 downto 0);
     data1    :   out std_logic_vector(23 downto 0);
     data2    :   out std_logic_vector(23 downto 0)
-
+    
     );
 end HannROM;
 
@@ -45,7 +45,7 @@ architecture RTL of HannROM is
 
     -- ROM now only stores 2048 samples (Half-depth)
     type rom_type is array (0 to 2047) of std_logic_vector(23 downto 0);
-    constant ROM : rom_type := (
+    constant ROM : rom_type := (  
     x"000000", x"00000A", x"000027", x"000059", x"00009E", x"0000F7", x"000163", x"0001E4",
     x"000278", x"000320", x"0003DB", x"0004AB", x"00058E", x"000685", x"00078F", x"0008AE",
     x"0009E0", x"000B26", x"000C7F", x"000DEC", x"000F6D", x"001102", x"0012AB", x"001467",
@@ -315,9 +315,9 @@ begin
                 -- Subtract from max index to mirror the first half
                 internal_addr0 <= 4095 - to_integer(unsigned(addr0));
             end if;
-
+            
             data0 <= ROM(internal_addr0);
-
+            
             -- Mirror logic: if MSB is 1, we are in the second half
             if addr1(11) = '0' then
                 internal_addr1 <= to_integer(unsigned(addr1));
@@ -325,9 +325,9 @@ begin
                 -- Subtract from max index to mirror the first half
                 internal_addr1 <= 4095 - to_integer(unsigned(addr1));
             end if;
-
+            
             data1 <= ROM(internal_addr1);
-
+            
             -- Mirror logic: if MSB is 1, we are in the second half
             if addr2(11) = '0' then
                 internal_addr2 <= to_integer(unsigned(addr2));
@@ -335,9 +335,9 @@ begin
                 -- Subtract from max index to mirror the first half
                 internal_addr2 <= 4095 - to_integer(unsigned(addr2));
             end if;
-
+            
             data2 <= ROM(internal_addr2);
-
+            
         end if;
     end process;
 

@@ -1,72 +1,72 @@
--- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
--- Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+--Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+--Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
--- Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
--- Design      : design_1_wrapper
--- Purpose     : Source-controlled wrapper for the Vivado block design.
+--Tool Version: Vivado v.2023.2 (win64) Build 4029153 Fri Oct 13 20:14:34 MDT 2023
+--Date        : Sun May  3 23:24:21 2026
+--Host        : DESKTOP-6QOLK3M running 64-bit major release  (build 9200)
+--Command     : generate_target design_1_wrapper.bd
+--Design      : design_1_wrapper
+--Purpose     : IP block netlist
 ----------------------------------------------------------------------------------
-
-library ieee;
-use ieee.std_logic_1164.all;
-
-library unisim;
-use unisim.vcomponents.all;
-
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+library UNISIM;
+use UNISIM.VCOMPONENTS.ALL;
 entity design_1_wrapper is
   port (
-    DDR_addr : inout std_logic_vector(14 downto 0);
-    DDR_ba : inout std_logic_vector(2 downto 0);
-    DDR_cas_n : inout std_logic;
-    DDR_ck_n : inout std_logic;
-    DDR_ck_p : inout std_logic;
-    DDR_cke : inout std_logic;
-    DDR_cs_n : inout std_logic;
-    DDR_dm : inout std_logic_vector(3 downto 0);
-    DDR_dq : inout std_logic_vector(31 downto 0);
-    DDR_dqs_n : inout std_logic_vector(3 downto 0);
-    DDR_dqs_p : inout std_logic_vector(3 downto 0);
-    DDR_odt : inout std_logic;
-    DDR_ras_n : inout std_logic;
-    DDR_reset_n : inout std_logic;
-    DDR_we_n : inout std_logic;
-    FIXED_IO_ddr_vrn : inout std_logic;
-    FIXED_IO_ddr_vrp : inout std_logic;
-    FIXED_IO_mio : inout std_logic_vector(53 downto 0);
-    FIXED_IO_ps_clk : inout std_logic;
-    FIXED_IO_ps_porb : inout std_logic;
-    FIXED_IO_ps_srstb : inout std_logic
+    DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
+    DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
+    DDR_cas_n : inout STD_LOGIC;
+    DDR_ck_n : inout STD_LOGIC;
+    DDR_ck_p : inout STD_LOGIC;
+    DDR_cke : inout STD_LOGIC;
+    DDR_cs_n : inout STD_LOGIC;
+    DDR_dm : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+    DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
+    DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+    DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+    DDR_odt : inout STD_LOGIC;
+    DDR_ras_n : inout STD_LOGIC;
+    DDR_reset_n : inout STD_LOGIC;
+    DDR_we_n : inout STD_LOGIC;
+    FIXED_IO_ddr_vrn : inout STD_LOGIC;
+    FIXED_IO_ddr_vrp : inout STD_LOGIC;
+    FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+    FIXED_IO_ps_clk : inout STD_LOGIC;
+    FIXED_IO_ps_porb : inout STD_LOGIC;
+    FIXED_IO_ps_srstb : inout STD_LOGIC
   );
 end design_1_wrapper;
 
-architecture structure of design_1_wrapper is
+architecture STRUCTURE of design_1_wrapper is
   component design_1 is
-    port (
-      DDR_cas_n : inout std_logic;
-      DDR_cke : inout std_logic;
-      DDR_ck_n : inout std_logic;
-      DDR_ck_p : inout std_logic;
-      DDR_cs_n : inout std_logic;
-      DDR_reset_n : inout std_logic;
-      DDR_odt : inout std_logic;
-      DDR_ras_n : inout std_logic;
-      DDR_we_n : inout std_logic;
-      DDR_ba : inout std_logic_vector(2 downto 0);
-      DDR_addr : inout std_logic_vector(14 downto 0);
-      DDR_dm : inout std_logic_vector(3 downto 0);
-      DDR_dq : inout std_logic_vector(31 downto 0);
-      DDR_dqs_n : inout std_logic_vector(3 downto 0);
-      DDR_dqs_p : inout std_logic_vector(3 downto 0);
-      FIXED_IO_mio : inout std_logic_vector(53 downto 0);
-      FIXED_IO_ddr_vrn : inout std_logic;
-      FIXED_IO_ddr_vrp : inout std_logic;
-      FIXED_IO_ps_srstb : inout std_logic;
-      FIXED_IO_ps_clk : inout std_logic;
-      FIXED_IO_ps_porb : inout std_logic
-    );
+  port (
+    DDR_cas_n : inout STD_LOGIC;
+    DDR_cke : inout STD_LOGIC;
+    DDR_ck_n : inout STD_LOGIC;
+    DDR_ck_p : inout STD_LOGIC;
+    DDR_cs_n : inout STD_LOGIC;
+    DDR_reset_n : inout STD_LOGIC;
+    DDR_odt : inout STD_LOGIC;
+    DDR_ras_n : inout STD_LOGIC;
+    DDR_we_n : inout STD_LOGIC;
+    DDR_ba : inout STD_LOGIC_VECTOR ( 2 downto 0 );
+    DDR_addr : inout STD_LOGIC_VECTOR ( 14 downto 0 );
+    DDR_dm : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+    DDR_dq : inout STD_LOGIC_VECTOR ( 31 downto 0 );
+    DDR_dqs_n : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+    DDR_dqs_p : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+    FIXED_IO_mio : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+    FIXED_IO_ddr_vrn : inout STD_LOGIC;
+    FIXED_IO_ddr_vrp : inout STD_LOGIC;
+    FIXED_IO_ps_srstb : inout STD_LOGIC;
+    FIXED_IO_ps_clk : inout STD_LOGIC;
+    FIXED_IO_ps_porb : inout STD_LOGIC
+  );
   end component design_1;
 begin
-  design_1_i : component design_1
-    port map (
+design_1_i: component design_1
+     port map (
       DDR_addr(14 downto 0) => DDR_addr(14 downto 0),
       DDR_ba(2 downto 0) => DDR_ba(2 downto 0),
       DDR_cas_n => DDR_cas_n,
@@ -89,4 +89,4 @@ begin
       FIXED_IO_ps_porb => FIXED_IO_ps_porb,
       FIXED_IO_ps_srstb => FIXED_IO_ps_srstb
     );
-end structure;
+end STRUCTURE;

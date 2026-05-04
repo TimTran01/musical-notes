@@ -26,68 +26,57 @@ end clk_divider;
 
 architecture arch of clk_divider is
 
-    -- 48 kHz divider state. Toggling every 522 input clocks produces the
-    -- closest integer-divided square wave from the 50 MHz system clock.
-    signal counter_48 : integer range 0 to 521 := 0;
-    signal temporal_48: STD_LOGIC := '0';
-    
-    -- 12 kHz divider state.
-    signal counter_12 : integer range 0 to 2083 := 0;
-    signal temporal_12: STD_LOGIC := '0';
-    
-    -- 3 kHz divider state.
-    signal counter_3 : integer range 0 to 8333 := 0;
-    signal temporal_3: STD_LOGIC := '0';
-    
+    constant CLK_FREQ_HZ    : natural := 50_000_000;
+    constant SAMPLE_RATE_HZ : natural := 48_000;
+
+    signal phase_accumulator : natural range 0 to CLK_FREQ_HZ - 1 := 0;
+    signal div4_count        : unsigned(1 downto 0) := (others => '0');
+    signal div16_count       : unsigned(3 downto 0) := (others => '0');
+
+    signal tick_48 : std_logic := '0';
+    signal tick_12 : std_logic := '0';
+    signal tick_3  : std_logic := '0';
+
 begin
- 
-p_48kHz:  process(clk_in, reset)
+
+    process(clk_in, reset)
+        variable next_phase : natural range 0 to CLK_FREQ_HZ + SAMPLE_RATE_HZ;
     begin
         if reset = '1' then
-            temporal_48 <= '0';
-            counter_48  <= 0;
+            phase_accumulator <= 0;
+            div4_count        <= (others => '0');
+            div16_count       <= (others => '0');
+            tick_48           <= '0';
+            tick_12           <= '0';
+            tick_3            <= '0';
         elsif rising_edge(clk_in) then
-            if counter_48 = 521 then
-                temporal_48 <= NOT(temporal_48);
-                counter_48  <= 0;
+            tick_48 <= '0';
+            tick_12 <= '0';
+            tick_3  <= '0';
+
+            next_phase := phase_accumulator + SAMPLE_RATE_HZ;
+            if next_phase >= CLK_FREQ_HZ then
+                phase_accumulator <= next_phase - CLK_FREQ_HZ;
+                tick_48 <= '1';
+
+                if div4_count = "00" then
+                    tick_12 <= '1';
+                end if;
+
+                if div16_count = "0000" then
+                    tick_3 <= '1';
+                end if;
+
+                div4_count  <= div4_count + 1;
+                div16_count <= div16_count + 1;
             else
-                counter_48 <= counter_48 + 1;
+                phase_accumulator <= next_phase;
             end if;
         end if;
     end process;
-    
- p_12kHz:  process(clk_in, reset)
-    begin
-        if reset = '1' then
-            temporal_12 <= '0';
-            counter_12  <= 0;
-        elsif rising_edge(clk_in) then
-            if counter_12 = 2083 then
-                temporal_12 <= NOT(temporal_12);
-                counter_12  <= 0;
-            else
-                counter_12 <= counter_12 + 1;
-            end if;
-        end if;
-    end process;
-    
- p_3kHz:  process(clk_in, reset)
-    begin
-        if reset = '1' then
-            temporal_3 <= '0';
-            counter_3  <= 0;
-        elsif rising_edge(clk_in) then
-            if counter_3 = 8333 then
-                temporal_3 <= NOT(temporal_3);
-                counter_3  <= 0;
-            else
-                counter_3 <= counter_3 + 1;
-            end if;
-        end if;
-    end process;
-    
-    clk_out_48 <= temporal_48;
-    clk_out_12 <= temporal_12;
-    clk_out_3 <= temporal_3;
-    
+
+    clk_out_48 <= tick_48;
+    clk_out_12 <= tick_12;
+    clk_out_3  <= tick_3;
+
 end arch;

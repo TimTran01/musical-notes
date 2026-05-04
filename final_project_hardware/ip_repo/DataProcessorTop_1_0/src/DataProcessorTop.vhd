@@ -29,23 +29,23 @@ entity DataProcessorTop is
 Port (
     clk     :   std_logic;
     rst     :   std_logic;
-
+    
     sample  :   std_logic_vector(23 downto 0);
-
+    
     hann0       :   in std_logic_vector(23 downto 0);
     hann1       :   in std_logic_vector(23 downto 0);
     hann2       :   in std_logic_vector(23 downto 0);
     hann_addr0  :   out std_logic_vector(11 downto 0);
     hann_addr1  :   out std_logic_vector(11 downto 0);
     hann_addr2  :   out std_logic_vector(11 downto 0);
-
+    
     ram_addr3   :   out std_logic_vector(11 downto 0);
     ram_addr12  :   out std_logic_vector(11 downto 0);
     ram_addr48  :   out std_logic_vector(11 downto 0);
     ram_data3   :   out std_logic_vector(23 downto 0);
     ram_data12  :   out std_logic_vector(23 downto 0);
     ram_data48  :   out std_logic_vector(23 downto 0);
-
+    
     RAM_WE3     :   out std_logic;
     RAM_WE12    :   out std_logic;
     RAM_WE48    :   out std_logic;
@@ -55,7 +55,7 @@ Port (
     G_DONE3     :   in std_logic;
     G_DONE12    :   in std_logic;
     G_DONE48    :   in std_logic
-
+    
  );
 end DataProcessorTop;
 

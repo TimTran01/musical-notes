@@ -29,7 +29,7 @@ architecture sim of full_note_detector_wrapper_tb is
 
     constant CLK_PERIOD : time := 20 ns; -- 50 MHz
     constant SOURCE_DIR : string := "";
-    constant WATCHDOG_CYCLES : natural := 500_000;
+    constant WATCHDOG_CYCLES : natural := 5_000_000;
 
     signal sys_clk : std_logic := '0';
     signal sys_rst : std_logic := '1';

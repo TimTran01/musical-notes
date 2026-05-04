@@ -76,8 +76,8 @@ architecture rtl of goertzel_engines_3bank is
     -- The Goertzel core reports a bin number local to each bank. These first
     -- key constants convert that local bin into the workbook piano-key number:
     --   Bank1/3 kHz  bin 0..23 -> key 1..24
-    --   Bank2/12 kHz bin 0..23 -> key 25..48
-    --   Bank3/48 kHz bin 0..39 -> key 49..88
+    --   Bank2/12 kHz bin 0..27 -> key 25..52
+    --   Bank3/48 kHz bin 0..35 -> key 53..88
     --------------------------------------------------------------------------
     constant RAM_DEPTH       : natural := 4096;
     constant BLOCK_SIZE      : natural := 128;
@@ -86,7 +86,7 @@ architecture rtl of goertzel_engines_3bank is
     constant NOTE_WIDTH      : natural := 7;
     constant BANK1_FIRST_KEY : natural := 1;
     constant BANK2_FIRST_KEY : natural := 25;
-    constant BANK3_FIRST_KEY : natural := 49;
+    constant BANK3_FIRST_KEY : natural := 53;
     constant BANK_SEL_3KHZ   : unsigned(1 downto 0) := to_unsigned(0, 2);
     constant BANK_SEL_12KHZ  : unsigned(1 downto 0) := to_unsigned(1, 2);
     constant BANK_SEL_48KHZ  : unsigned(1 downto 0) := to_unsigned(2, 2);
@@ -518,7 +518,7 @@ begin
 
                 ------------------------------------------------------------------
                 -- Bank2/12 kHz uses the same max-selection policy, with local
-                -- bins mapped into workbook keys 25 through 48.
+                -- bins mapped into workbook keys 25 through 52.
                 ------------------------------------------------------------------
                 if power12_valid = '1' then
                     if power12_bin = to_unsigned(0, power12_bin'length) then
@@ -537,7 +537,7 @@ begin
                 end if;
 
                 ------------------------------------------------------------------
-                -- Bank3/48 kHz covers the top forty keys. The internal bin range is
+                -- Bank3/48 kHz covers the top thirty-six keys. The internal bin range is
                 -- larger, but the candidate latch is identical to the other banks.
                 ------------------------------------------------------------------
                 if power48_valid = '1' then
