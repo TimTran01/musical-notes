@@ -8,6 +8,7 @@
 #   HannROM
 #   bram_sp
 #   goertzel_engines_3bank
+#   note_event_latch
 #
 # The helper RTL files stay inside their parent IP package. Keeping only the
 # diagram-facing blocks visible in the IP catalog makes the rebuilt block design
@@ -124,6 +125,12 @@ package_one_ip \
         "$source_dir/goertzel_bank2_coeff.mem" \
         "$source_dir/goertzel_bank3_coeff.mem" \
     ]
+
+package_one_ip \
+    note_event_latch \
+    {Note Event Latch} \
+    {Latches one-cycle note detector decisions for AXI GPIO software reads and level-sensitive PS interrupts.} \
+    [list "$source_dir/note_event_latch.vhd"]
 
 open_project $main_project_path
 set_property ip_repo_paths $ip_repo_dir [current_project]

@@ -1,14 +1,14 @@
 {
   "schema": "xilinx.com:schema:json_instance:1.0",
   "ip_inst": {
-    "xci_name": "design_1_DataProcessorTop_0_0",
-    "cell_name": "DataProcessorTop_0",
-    "component_reference": "user.org:user:DataProcessorTop:1.0",
+    "xci_name": "design_1_note_event_latch_0_0",
+    "cell_name": "note_event_latch_0",
+    "component_reference": "user.org:user:note_event_latch:1.0",
     "ip_revision": "1",
-    "gen_directory": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_DataProcessorTop_0_0",
+    "gen_directory": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_note_event_latch_0_0",
     "parameters": {
       "component_parameters": {
-        "Component_Name": [ { "value": "design_1_DataProcessorTop_0_0", "resolve_type": "user", "usage": "all" } ]
+        "Component_Name": [ { "value": "design_1_note_event_latch_0_0", "resolve_type": "user", "usage": "all" } ]
       },
       "project_parameters": {
         "ARCHITECTURE": [ { "value": "zynq" } ],
@@ -27,7 +27,7 @@
         "IPCONTEXT": [ { "value": "IP_Integrator" } ],
         "IPREVISION": [ { "value": "1" } ],
         "MANAGED": [ { "value": "TRUE" } ],
-        "OUTPUTDIR": [ { "value": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_DataProcessorTop_0_0" } ],
+        "OUTPUTDIR": [ { "value": "../../../../../../final_project_hardware.gen/sources_1/bd/design_1/ip/design_1_note_event_latch_0_0" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "../../ipshared" } ],
         "SWVERSION": [ { "value": "2023.2" } ],
@@ -38,28 +38,12 @@
       "ports": {
         "clk": [ { "direction": "in" } ],
         "rst": [ { "direction": "in" } ],
-        "sample": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
-        "hann0": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
-        "hann1": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
-        "hann2": [ { "direction": "in", "size_left": "23", "size_right": "0" } ],
-        "hann_addr0": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "hann_addr1": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "hann_addr2": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "ram_addr3": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "ram_addr12": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "ram_addr48": [ { "direction": "out", "size_left": "11", "size_right": "0" } ],
-        "ram_data3": [ { "direction": "out", "size_left": "23", "size_right": "0" } ],
-        "ram_data12": [ { "direction": "out", "size_left": "23", "size_right": "0" } ],
-        "ram_data48": [ { "direction": "out", "size_left": "23", "size_right": "0" } ],
-        "RAM_WE3": [ { "direction": "out" } ],
-        "RAM_WE12": [ { "direction": "out" } ],
-        "RAM_WE48": [ { "direction": "out" } ],
-        "G_EN3": [ { "direction": "out" } ],
-        "G_EN12": [ { "direction": "out" } ],
-        "G_EN48": [ { "direction": "out" } ],
-        "G_DONE3": [ { "direction": "in" } ],
-        "G_DONE12": [ { "direction": "in" } ],
-        "G_DONE48": [ { "direction": "in" } ]
+        "note_key": [ { "direction": "in", "size_left": "6", "size_right": "0" } ],
+        "note_valid": [ { "direction": "in" } ],
+        "clear": [ { "direction": "in", "size_left": "0", "size_right": "0" } ],
+        "latched_key": [ { "direction": "out", "size_left": "6", "size_right": "0" } ],
+        "pending": [ { "direction": "out" } ],
+        "irq": [ { "direction": "out" } ]
       },
       "interfaces": {
         "rst": {
@@ -90,6 +74,18 @@
           },
           "port_maps": {
             "CLK": [ { "physical_name": "clk" } ]
+          }
+        },
+        "irq": {
+          "vlnv": "xilinx.com:signal:interrupt:1.0",
+          "abstraction_type": "xilinx.com:signal:interrupt_rtl:1.0",
+          "mode": "master",
+          "parameters": {
+            "SENSITIVITY": [ { "value": "LEVEL_HIGH", "value_src": "constant", "value_permission": "bd_and_user", "usage": "all" } ],
+            "PortWidth": [ { "value": "1", "value_permission": "bd_and_user", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ]
+          },
+          "port_maps": {
+            "INTERRUPT": [ { "physical_name": "irq" } ]
           }
         }
       }
