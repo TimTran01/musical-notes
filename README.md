@@ -255,6 +255,26 @@ This workbook is the reference result set for the custom IP testbenches and the
 full hardware pipeline. It compares theoretical expected note/power behavior
 against hardware simulation or board-observed output.
 
+Workbook result summary:
+
+- Full pipeline testbench: `full_note_detector_wrapper_tb` passed. Hardware
+  output `NOTE_KEY`, observed trace key, and theoretical key all matched key 1.
+- Winner power check passed. Hardware winner power
+  `000000000000000000000C17B0F8` matched the theoretical winner power exactly.
+- ADC input path passed. All 4096 ADC samples matched expected signed and hex
+  values with 0 mismatches.
+- Bank RAM preprocessing path passed. All 640 compared RAM output rows matched,
+  covering bank address timing, Hann coefficient lookup, and windowed sample
+  output.
+- Per-bank Goertzel candidate check passed. All 3 bank candidates matched their
+  expected key and power values.
+- All-88 Goertzel regression passed. The test ran 88 target notes, produced 88
+  hardware decisions, observed 88 note reports, and found 0 mismatches.
+- All-88 input sample comparison passed. All 33,792 generated bank input sample
+  rows matched expected values.
+- All-88 plot data shows a numeric note-match value of 1 for every key, meaning
+  every target key decoded to the expected piano key.
+
 Workbook pages:
 
 - `Summary`: full pipeline result for `full_note_detector_wrapper_tb`; records
