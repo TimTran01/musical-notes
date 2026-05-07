@@ -255,54 +255,82 @@ This workbook is the reference result set for the custom IP testbenches and the
 full hardware pipeline. It compares theoretical expected note/power behavior
 against hardware simulation or board-observed output.
 
-Workbook result summary:
+Workbook sheets and results:
 
-- Full pipeline testbench: `full_note_detector_wrapper_tb` passed. Hardware
-  output `NOTE_KEY`, observed trace key, and theoretical key all matched key 1.
-- Winner power check passed. Hardware winner power
-  `000000000000000000000C17B0F8` matched the theoretical winner power exactly.
-- ADC input path passed. All 4096 ADC samples matched expected signed and hex
-  values with 0 mismatches.
-- Bank RAM preprocessing path passed. All 640 compared RAM output rows matched,
-  covering bank address timing, Hann coefficient lookup, and windowed sample
-  output.
-- Per-bank Goertzel candidate check passed. All 3 bank candidates matched their
-  expected key and power values.
-- All-88 Goertzel regression passed. The test ran 88 target notes, produced 88
-  hardware decisions, observed 88 note reports, and found 0 mismatches.
-- All-88 input sample comparison passed. All 33,792 generated bank input sample
-  rows matched expected values.
-- All-88 plot data shows a numeric note-match value of 1 for every key, meaning
-  every target key decoded to the expected piano key.
+### `Summary`
 
-Workbook pages:
+Test: full-pipeline run for `full_note_detector_wrapper_tb`. This sheet records
+the input memory, hardware `NOTE_KEY`, observed trace key, theoretical key,
+winner-power comparison, ADC sample comparison, and bank RAM mismatch totals.
 
-- `Summary`: full pipeline result for `full_note_detector_wrapper_tb`; records
-  input memory, hardware `NOTE_KEY`, observed trace key, theoretical key,
-  winner-power comparison, ADC input sample comparison, and bank RAM output
-  mismatch counts.
-- `ADC_Input`: verifies every 24-bit ADC input sample delivered to hardware
-  matches the theoretical sample data. It compares sample index, hex value,
-  signed value, and pass/fail status across the 4096-sample frame.
-- `Bank_RAM_Outputs`: checks `DataProcessorTop`, `HannROM`, and `bram_sp`
-  behavior at the bank RAM boundary. It compares RAM write cycles, RAM
-  addresses, source samples, Hann addresses/coefficients, and theoretical
-  versus actual windowed RAM output words.
-- `Bank_Candidates`: checks `goertzel_engines_3bank` per-bank candidate
-  results for the full pipeline run. It compares each bank's expected key and
-  power against the RAM-model/hardware candidate key and power.
-- `All88_Summary`: all-note regression summary for
-  `goertzel_engines_88note_tb`; records notes run, decisions observed,
-  mismatch count, result status, source log, expected CSV, and plot-sheet link.
-- `All88_Decisions`: one row per piano key. It validates target frequency,
-  active bank, theoretical output key/power, actual hardware output key/power,
-  observed note key, decision timing, and pass/fail result.
-- `All88_Input_Samples`: input-sample comparison for the all-88 regression.
-  It checks the generated sample stream seen by each active bank against the
-  expected theoretical signed/hex sample values.
-- `All88_Plot_Data`: compact chart source for the all-88 run. It contains
-  target key, theoretical key, hardware key, observed note key, log-scaled
-  theoretical/actual power, and numeric pass/fail note-match data.
+Result: pass. Hardware output `NOTE_KEY`, observed trace key, and theoretical
+key all matched key 1. Hardware winner power
+`000000000000000000000C17B0F8` matched theoretical winner power exactly. ADC
+input mismatches were 0 across 4096 samples. Bank RAM output mismatches were 0
+across 640 compared rows.
+
+### `ADC_Input`
+
+Test: ADC input delivery into the hardware pipeline. This sheet compares each
+sample index, theoretical hex/signed value, actual hex/signed value, and
+pass/fail status for the 4096-sample frame.
+
+Result: pass. All 4096 ADC samples matched expected signed and hex values, with
+0 mismatches.
+
+### `Bank_RAM_Outputs`
+
+Test: preprocessing output at the bank RAM boundary. This sheet checks
+`DataProcessorTop`, `HannROM`, and `bram_sp` together by comparing RAM write
+cycles, RAM addresses, source samples, Hann addresses, Hann coefficients, and
+theoretical versus actual windowed RAM output words.
+
+Result: pass. All 640 compared bank RAM output rows matched expected values,
+with 0 mismatches.
+
+### `Bank_Candidates`
+
+Test: per-bank Goertzel candidate output for the full-pipeline run. This sheet
+checks `goertzel_engines_3bank` by comparing each bank's expected key and power
+against the RAM-model/hardware candidate key and power.
+
+Result: pass. All 3 bank candidates matched their expected key and power values.
+
+### `All88_Summary`
+
+Test: all-note regression summary for `goertzel_engines_88note_tb`. This sheet
+records notes run, hardware decisions, observed reports, mismatch count, result
+status, source log, expected CSV, and plot-sheet link.
+
+Result: pass. The regression ran 88 target notes, produced 88 hardware
+decisions, observed 88 note reports, and found 0 mismatches.
+
+### `All88_Decisions`
+
+Test: one-row-per-note decision check for keys 1..88. This sheet validates
+target frequency, active bank, theoretical output key/power, actual hardware
+output key/power, observed note key, decision timing, and pass/fail result.
+
+Result: pass. All 88 piano keys decoded to the expected key, and every listed
+decision row passed.
+
+### `All88_Input_Samples`
+
+Test: input sample comparison for the all-88 regression. This sheet checks the
+generated sample stream seen by each active bank against expected theoretical
+signed and hex sample values.
+
+Result: pass. All 33,792 generated bank input sample rows matched expected
+values.
+
+### `All88_Plot_Data`
+
+Test: compact chart source for the all-88 run. This sheet contains target key,
+theoretical key, hardware key, observed note key, log-scaled theoretical/actual
+power, and numeric note-match data.
+
+Result: pass. The numeric note-match value is 1 for every key, meaning every
+target key decoded to the expected piano key.
 
 Tracked simulation and check inputs live under:
 
