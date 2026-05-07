@@ -1,164 +1,322 @@
 # Musical Notes
 
-Vivado 2023.2 hardware project for the Zybo Z7-10 piano-note detector.
+Vivado/Vitis 2023.2 project for the Zybo Z7-10 piano-note detector.
 
-The current hardware project is `final_project_hardware`. It contains the
-openable Vivado project, the block design, the local packaged IP repository,
-the RTL sources used to package those IPs, and simulation testbenches for the
-detector path.
+The project contains a hardware note detector, a Vitis Unified IDE application,
+and a Python UART GUI. The current end-to-end flow is:
+
+```text
+Python generated ADC samples
+-> UART LOAD command to Vitis
+-> AXI ADC sample player BRAM
+-> 3-bank Hann/window preprocessing
+-> shared Goertzel note detector
+-> note event latch
+-> AXI GPIO + IRQ to Zynq PS
+-> UART CSV note output
+-> Python GUI display
+```
 
 ## Hardware Design
 
-The block design is stored at
-`final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/design_1.bd`
-and can be opened from `final_project_hardware/final_project_hardware.xpr`.
+The Vivado project is
+`final_project_hardware/final_project_hardware.xpr`. The main block design is
+`final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1/design_1.bd`.
 
-At a high level, the design replays a generated 48 kHz ADC sample frame,
-preprocesses the stream into three analysis banks, runs a shared Goertzel
-detector across all 88 piano-note bins, and latches the detected note for the
-Zynq processing system through AXI GPIO and an interrupt.
+The hardware accepts a 4096-sample 24-bit ADC frame, analyzes that frame in
+three sample-rate banks, finds the strongest piano note from keys 1..88, then
+latches the result for software.
 
-The custom IP packages live under `final_project_hardware/ip_repo`. The block
-design also uses standard Vivado/Zynq IP such as Processing System 7, AXI GPIO,
-AXI interconnect, reset/constant blocks, and debug ILA cores.
+The local custom IP repository is `final_project_hardware/ip_repo`. The design
+also uses standard Vivado/Zynq IP such as Processing System 7, AXI GPIO, AXI
+interconnect/smartconnect, reset blocks, constants, concat/logic, and debug ILA
+cores.
 
 ## Custom IP
+
+### `axi_adc_sample_player`
+
+Vivado VLNV: `user.org:user:axi_adc_sample_player:1.0`
+
+Software-writable ADC sample source. This IP exposes an AXI4-Lite register and
+BRAM interface so the Vitis application can write all 4096 ADC samples before
+starting playback. It replays the lower 24 bits of each written 32-bit word at
+an average 48 kHz rate.
+
+Main registers:
+
+- `CONTROL` at `0x0000`: enable playback and restart detector.
+- `STATUS` at `0x0004`: playback state and current sample index.
+- `SAMPLE_COUNT` at `0x0008`: fixed 4096 samples.
+- `SAMPLE_DATA` at `0x1000`: 4096 writable sample words.
+
+This IP lets the Python GUI generate new note captures without rebuilding a
+bitstream.
 
 ### `adc_sample_48khz_sampler`
 
 Vivado VLNV: `user.org:user:adc_sample_48khz_sampler:1.0`
 
-This IP provides the repeatable ADC input stream used by the hardware design.
-It wraps `adc_sample_rom`, reads 24-bit signed samples from `adc_samples.mem`,
-and emits a one-clock `sample_valid` pulse for each output sample. The default
-configuration is a 50 MHz input clock and a 48 kHz sample rate.
+ROM-backed ADC sample source. It wraps `adc_sample_rom`, reads signed 24-bit
+samples from `adc_samples.mem`, and emits one-clock `sample_valid` pulses at an
+average 48 kHz rate.
 
-Because 50 MHz does not divide evenly into 48 kHz, the sampler uses a
-fractional accumulator instead of creating a separate 48 kHz clock domain. It
-alternates the sample spacing between 1041 and 1042 input-clock cycles so the
-long-term average rate is exactly 48 kHz. The ROM holds one 4096-sample frame;
-`sample_index` and `frame_start` identify the current frame position.
+This IP is useful for fixed-memory hardware tests. The current software-driven
+flow uses `axi_adc_sample_player` instead, because samples are loaded from the
+Vitis application at runtime.
 
 ### `DataProcessorTop`
 
 Vivado VLNV: `user.org:user:DataProcessorTop:1.0`
 
-`DataProcessorTop` is the three-bank preprocessing IP. It connects
-`DataProcessorController`, `DataProcessorDatapath`, and `clk_divider` into the
-block-design interface used by the current system. The preprocessor accepts one
-24-bit ADC sample stream and produces windowed RAM write traffic for the 3 kHz,
-12 kHz, and 48 kHz analysis banks.
+Three-bank preprocessing IP. It wraps `DataProcessorController`,
+`DataProcessorDatapath`, and `clk_divider`.
 
-The datapath owns the bank counters, Hann coefficient address generation, sample
-multiplication, and write data formatting. The controller sequences each bank's
-write enable and Goertzel start/done handshake. The included `clk_divider`
-logic provides the per-bank timing enables needed for the 3 kHz, 12 kHz, and
-48 kHz data paths while keeping the IP synchronous to the shared system clock.
+Inputs:
 
-The public ports are intentionally bank-specific: `hann_addr0..2`, `ram_addr3`,
-`ram_addr12`, `ram_addr48`, `ram_data3`, `ram_data12`, `ram_data48`,
-`RAM_WE3`, `RAM_WE12`, `RAM_WE48`, `G_EN3`, `G_EN12`, `G_EN48`, and matching
-`G_DONE` inputs. These signals wire directly to the Hann ROM, bank RAMs, and
-Goertzel wrapper in the block design.
+- 24-bit ADC sample stream.
+- Bank done signals from the Goertzel wrapper.
+- Hann coefficients from `HannROM`.
+
+Outputs:
+
+- Windowed RAM write data for 3 kHz, 12 kHz, and 48 kHz banks.
+- RAM write enables and addresses.
+- `G_EN3`, `G_EN12`, `G_EN48` start pulses for Goertzel processing.
+- Hann ROM addresses for each bank.
+
+Purpose: decimate/capture the shared ADC stream into three analysis banks and
+apply the Hann window before Goertzel detection.
 
 ### `HannROM`
 
 Vivado VLNV: `user.org:user:HannROM:1.0`
 
-`HannROM` is a three-port synchronous coefficient ROM shared by the three
-preprocessing banks. Each port accepts a 12-bit address and returns a 24-bit
-Hann coefficient on the shared clock, allowing the 3 kHz, 12 kHz, and 48 kHz
-banks to fetch independent coefficients in the same cycle.
+Three-port synchronous Hann coefficient ROM. Each port accepts a 12-bit address
+and returns a 24-bit Hann coefficient, allowing the 3 kHz, 12 kHz, and 48 kHz
+banks to fetch independent coefficients in the same clock cycle.
 
-The full analysis window is 4096 samples, but the Hann window is symmetric. To
-save ROM space, the IP stores only the first 2048 coefficients. Addresses
-0..2047 read directly from the stored table, while addresses 2048..4095 mirror
-through `4095 - addr` to reconstruct the second half of the window.
+The full window is 4096 samples. The ROM stores the first 2048 coefficients and
+mirrors addresses 2048..4095 through `4095 - addr`.
 
 ### `bram_sp`
 
 Vivado VLNV: `user.org:user:bram_sp:1.0`
 
-`bram_sp` is the packaged bank RAM IP, displayed by Vivado as
-`bram_sp_v1_0`. The block design instantiates three copies, one each for the
-3 kHz, 12 kHz, and 48 kHz sample banks.
+Single-port packaged RAM used as the per-bank sample store. The block design
+instantiates one RAM for each analysis bank.
 
-The RAM is parameterized by `DATA_WIDTH` and `ADDR_WIDTH`, with the detector
-using the default 24-bit data width and 12-bit address width for 4096 samples.
-It has one synchronous write interface and one registered read interface with
-independent write and read addresses. The preprocessor writes windowed samples;
-the Goertzel wrapper later reads those samples by bank and block.
+Default detector configuration:
+
+- Data width: 24 bits.
+- Address width: 12 bits.
+- Depth: 4096 samples.
+
+The preprocessor writes windowed samples. The Goertzel wrapper later reads
+256-sample blocks from each bank.
 
 ### `goertzel_engines_3bank`
 
 Vivado VLNV: `user.org:user:goertzel_engines_3bank:1.0`
 
-This IP wraps the note-detection stage for all three RAM banks. It accepts the
-per-bank `G_EN` requests from the preprocessor, reads the requested bank RAM
-through `RAM_ADDR3`, `RAM_ADDR12`, and `RAM_ADDR48`, and returns the matching
-`G_DONE` pulse when that bank's block has been processed.
+Three-bank note detector wrapper. It accepts per-bank `G_EN` pulses, reads the
+selected bank RAM, runs one shared Goertzel core across the target note bins,
+and returns matching `G_DONE` pulses.
 
-Internally the wrapper time-multiplexes one shared Goertzel core across the
-three banks. This keeps the design small enough for the Zybo Z7-10 while still
-covering all 88 piano keys. Bank 1 maps 24 bins to keys 1..24, bank 2 maps
-24 bins to keys 25..48, and bank 3 maps 40 bins to keys 49..88. The coefficient
-tables are loaded from `goertzel_bank1_coeff.mem`,
-`goertzel_bank2_coeff.mem`, and `goertzel_bank3_coeff.mem`.
+Bank mapping:
 
-After all three banks have fresh candidates, the wrapper compares their raw
-Goertzel powers, emits the strongest piano-key number on `NOTE_KEY`, and pulses
-`NOTE_VALID` for one clock.
+- Bank 1: 3 kHz, keys 1..24, 24 bins.
+- Bank 2: 12 kHz, keys 25..52, 28 bins.
+- Bank 3: 48 kHz, keys 53..88, 36 bins.
+
+The shared core uses coefficients generated by
+`tools/generate_goertzel_bank_files.py` and stored in:
+
+- `goertzel_bank1_coeff.mem`
+- `goertzel_bank2_coeff.mem`
+- `goertzel_bank3_coeff.mem`
+
+The wrapper tracks the strongest bin per bank, compares the bank candidates,
+emits `NOTE_KEY`, and pulses `NOTE_VALID`.
 
 ### `note_event_latch`
 
 Vivado VLNV: `user.org:user:note_event_latch:1.0`
 
-`note_event_latch` turns the one-clock note decision from the Goertzel wrapper
-into a software-readable event. When `NOTE_VALID` is asserted, it stores the
-7-bit `NOTE_KEY`, raises `pending`, and drives a level-sensitive `irq` to the
-processing system. Software clears the pending event through a one-bit `clear`
-input connected through AXI GPIO.
+Software event bridge for note detection. `NOTE_VALID` is a one-clock hardware
+pulse, so software could miss it directly. This IP latches `NOTE_KEY`, raises
+`pending`, and holds `irq` high until software pulses `clear`.
+
+Purpose:
+
+- Save detected key long enough for PS software.
+- Convert one-clock PL event into stable AXI GPIO status.
+- Generate interrupt through `IRQ_F2P`.
+- Prevent repeated output until Vitis clears the event.
+
+## Software
+
+### Vitis Unified IDE Application
+
+Workspace root: `final_project_software`
+
+Main application: `final_project_software/piano_detect_application`
+
+Source entry point:
+`final_project_software/piano_detect_application/src/main.c`
+
+Platform component:
+`final_project_software/piano_detect_platform`
+
+The Vitis application runs on the Zynq PS, initializes AXI GPIO and SCUGIC,
+accepts UART `LOAD` commands, writes 4096 samples into `axi_adc_sample_player`,
+starts playback, reads note events, and prints UART CSV output.
+
+UART protocol:
+
+```text
+LOAD,4096,CHECKSUM
+<4096 lines of 6-hex-digit signed 24-bit samples>
+```
+
+Successful load response:
+
+```text
+LOADED,4096,CHECKSUM
+```
+
+Decoded note output:
+
+```text
+key,note,freq_hz
+49,A4,440.00
+```
+
+Debug output includes final key, per-bank candidate keys, selected bank, and
+compact power fields:
+
+```text
+DEBUG,final=49,bank3k=18,bank12k=49,bank48k=53,selected=12k,p3=0:00,p12=58:EE,p48=0:2C
+```
+
+Support scripts:
+
+- `tools/vitis_scripts/create_note_uart_components.py`: create platform/app from exported XSA.
+- `tools/vitis_scripts/update_piano_detect_platform.py`: refresh platform from latest XSA.
+- `tools/vitis_scripts/run_piano_detect_application.tcl`: load and run the built ELF over XSCT.
+
+### Python GUI
+
+GUI entry point: `final_project_software/note_gui.py`
+
+The GUI connects to the board UART, displays decoded notes, and can generate
+software-loaded ADC captures.
+
+Features:
+
+- Default serial port `COM6`.
+- Default baud rate `115200`.
+- Random key generation over keys 1..88.
+- Selected key generation with a 1..88 prompt.
+- 4096-sample UART load into Vitis.
+- Generated-vs-decoded match/mismatch status.
+- Malformed UART line handling without crashing.
+
+Run from `final_project_software`:
+
+```sh
+python note_gui.py --port COM6 --baud 115200
+```
+
+Dependencies:
+
+```sh
+pip install -r requirements.txt
+```
+
+Parser and generator tests:
+
+```sh
+python -m unittest test_note_gui_parser.py
+```
+
+Board sweep helper:
+
+```sh
+python -u pure_sine_note_test.py --port COM6 --waveform piano --keys 1-88 --timeout 10 --seed 615
+```
+
+## Results And Testbenches
+
+Consolidated results workbook:
+[full_design_theory_vs_hardware.xlsx](final_project_hardware/full_design_theory_vs_hardware.xlsx)
+
+This workbook is the reference result set for the custom IP testbenches and the
+full hardware pipeline. It compares theoretical expected note/power behavior
+against hardware simulation or board-observed output.
+
+Tracked simulation and check inputs live under:
+
+- `final_project_hardware/final_project_hardware.srcs/sim_1/new`
+- `final_project_hardware/check_full_note_theory.py`
+- `final_project_hardware/run_full_sim_check.tcl`
+- `final_project_hardware/run_88_note_sim_check.tcl`
+- `final_project_hardware/run_note_event_latch_sim_check.tcl`
+
+Coverage intent:
+
+- `axi_adc_sample_player`: software-loaded sample playback and restart behavior.
+- `adc_sample_48khz_sampler`: fixed `.mem` sample replay path.
+- `DataProcessorTop`: bank timing, Hann addressing, RAM write data, and Goertzel start pulses.
+- `HannROM`: mirrored coefficient lookup.
+- `bram_sp`: bank RAM read/write behavior.
+- `goertzel_engines_3bank`: per-bank candidates and final note decision.
+- `note_event_latch`: pending/IRQ latch and clear behavior.
+- Full pipeline: 4096-sample capture through final `NOTE_KEY` event.
 
 ## Project Layout
 
 - `final_project_hardware/final_project_hardware.xpr`: Vivado 2023.2 project.
 - `final_project_hardware/final_project_hardware.srcs/sources_1/bd/design_1`: main block design.
-- `final_project_hardware/final_project_hardware.srcs/sources_1/new`: RTL and memory files used by the project.
-- `final_project_hardware/final_project_hardware.srcs/sim_1/new`: hardware simulation testbenches and note-vector memories.
+- `final_project_hardware/final_project_hardware.srcs/sources_1/new`: RTL and memory files.
+- `final_project_hardware/final_project_hardware.srcs/sim_1/new`: simulation testbenches and note-vector memories.
 - `final_project_hardware/ip_repo`: local packaged custom IP repository.
-- `tools/generate_adc_samples.py`: regenerates ADC sample memory contents.
-- `tools/generate_goertzel_bank_files.py`: regenerates Goertzel coefficient memories.
-- `tools/vivado_scripts`: Vivado batch scripts for packaging IP, regenerating block-design output products, synthesis/implementation checks, bitstream generation, and hardware export.
+- `final_project_software`: Vitis Unified IDE workspace plus Python GUI.
+- `final_project_software/piano_detect_application`: Vitis standalone application.
+- `final_project_software/piano_detect_platform`: Vitis platform component.
+- `tools/generate_adc_samples.py`: GUI and `.mem` ADC sample generator.
+- `tools/generate_goertzel_bank_files.py`: Goertzel coefficient generator.
+- `tools/vivado_scripts`: Vivado batch scripts.
+- `tools/vitis_scripts`: Vitis/XSCT helper scripts.
 
-Generated Vivado run directories, caches, logs, bitstreams, and Vitis output
-products are not tracked. They should be rebuilt locally from the project,
-source, memory, block-design, and script inputs in this repository.
+Generated Vivado run directories, Vitis build products, logs, bitstreams, and
+ELFs should be rebuilt locally unless explicitly committed for a release.
 
 ## Rebuild
 
-1. Install Vivado 2023.2 and the Digilent Zybo Z7-10 board files.
-2. Open `final_project_hardware/final_project_hardware.xpr`.
-3. Refresh the local IP repository if Vivado prompts for it. The repository path
-   is `final_project_hardware/ip_repo`.
-4. Regenerate block-design output products for `design_1`.
-5. Run synthesis, implementation, and bitstream generation.
-
-The same flow can be run from batch scripts in `tools/vivado_scripts`. The most
-useful entry points are `regenerate_design_1_outputs.tcl`,
-`run_synth_1_check.tcl`, `run_impl_1_check.tcl`, `run_bitstream_check.tcl`, and
-`build_and_export_note_hardware.tcl`.
-
-## Simulation
-
-The tracked testbench inputs are under
-`final_project_hardware/final_project_hardware.srcs/sim_1/new`. The full design
-and all-88-note checks can be launched with:
+Hardware batch flow:
 
 ```sh
-vivado -mode batch -source final_project_hardware/run_full_sim_check.tcl
-vivado -mode batch -source final_project_hardware/run_88_note_sim_check.tcl
+vivado -mode batch -source tools/vivado_scripts/package_three_bank_generic_ips.tcl
+vivado -mode batch -source tools/vivado_scripts/connect_note_uart_bd.tcl
+vivado -mode batch -source tools/vivado_scripts/build_and_export_note_hardware.tcl
 ```
 
-The Python check scripts in `final_project_hardware` compare theoretical note
-results against hardware simulation output. Generated reports are local build
-artifacts and are not required to open or rebuild the Vivado project.
+Program FPGA:
+
+```sh
+vivado -mode batch -source tools/vivado_scripts/program_note_hardware.tcl
+```
+
+Run Vitis application after build:
+
+```sh
+xsct tools/vitis_scripts/run_piano_detect_application.tcl
+```
+
+Run Python GUI:
+
+```sh
+cd final_project_software
+python note_gui.py --port COM6 --baud 115200
+```
