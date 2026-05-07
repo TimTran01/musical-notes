@@ -255,6 +255,35 @@ This workbook is the reference result set for the custom IP testbenches and the
 full hardware pipeline. It compares theoretical expected note/power behavior
 against hardware simulation or board-observed output.
 
+Workbook pages:
+
+- `Summary`: full pipeline result for `full_note_detector_wrapper_tb`; records
+  input memory, hardware `NOTE_KEY`, observed trace key, theoretical key,
+  winner-power comparison, ADC input sample comparison, and bank RAM output
+  mismatch counts.
+- `ADC_Input`: verifies every 24-bit ADC input sample delivered to hardware
+  matches the theoretical sample data. It compares sample index, hex value,
+  signed value, and pass/fail status across the 4096-sample frame.
+- `Bank_RAM_Outputs`: checks `DataProcessorTop`, `HannROM`, and `bram_sp`
+  behavior at the bank RAM boundary. It compares RAM write cycles, RAM
+  addresses, source samples, Hann addresses/coefficients, and theoretical
+  versus actual windowed RAM output words.
+- `Bank_Candidates`: checks `goertzel_engines_3bank` per-bank candidate
+  results for the full pipeline run. It compares each bank's expected key and
+  power against the RAM-model/hardware candidate key and power.
+- `All88_Summary`: all-note regression summary for
+  `goertzel_engines_88note_tb`; records notes run, decisions observed,
+  mismatch count, result status, source log, expected CSV, and plot-sheet link.
+- `All88_Decisions`: one row per piano key. It validates target frequency,
+  active bank, theoretical output key/power, actual hardware output key/power,
+  observed note key, decision timing, and pass/fail result.
+- `All88_Input_Samples`: input-sample comparison for the all-88 regression.
+  It checks the generated sample stream seen by each active bank against the
+  expected theoretical signed/hex sample values.
+- `All88_Plot_Data`: compact chart source for the all-88 run. It contains
+  target key, theoretical key, hardware key, observed note key, log-scaled
+  theoretical/actual power, and numeric pass/fail note-match data.
+
 Tracked simulation and check inputs live under:
 
 - `final_project_hardware/final_project_hardware.srcs/sim_1/new`
